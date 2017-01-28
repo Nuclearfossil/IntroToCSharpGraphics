@@ -14,6 +14,11 @@ namespace BBIU_CSharp_Native
 
     abstract class ExampleBase : GameWindow
     {
+        public ExampleBase() : base(1024, 768, new OpenTK.Graphics.GraphicsMode(32, 8, 0, 0))
+        {
+
+        }
+
         protected override void OnLoad(EventArgs e)
         {
             base.OnLoad(e);
@@ -46,6 +51,10 @@ namespace BBIU_CSharp_Native
     /// </summary>
     class Example01 : ExampleBase
     {
+        public Example01() : base()
+        {
+        }
+
         protected override void CustomRenderFrame(double delta)
         {            
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
@@ -74,6 +83,10 @@ namespace BBIU_CSharp_Native
     /// </summary>
     class Example02 : ExampleBase
     {
+        public Example02() : base()
+        {
+        }
+
         protected override void CustomRenderFrame(double delta)
         {
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
@@ -104,11 +117,104 @@ namespace BBIU_CSharp_Native
         }
     }
 
+    class Example03 : ExampleBase
+    {
+        public Example03() : base()
+        {
+        }
+
+        protected override void OnLoad(EventArgs e)
+        {
+            base.OnLoad(e);
+
+            GL.Enable(EnableCap.Blend);
+            GL.BlendFunc(BlendingFactorSrc.SrcAlpha, BlendingFactorDest.OneMinusSrcAlpha);
+        }
+
+        protected override void CustomRenderFrame(double delta)
+        {
+            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
+
+            GL.Begin(BeginMode.Triangles);
+            {
+                GL.Color3(1.0f, 0.0f, 0.0f);
+                GL.Vertex2(-0.75f, -0.75f);
+
+                GL.Color3(0.0f, 0.0f, 1.0f);
+                GL.Vertex2(-0.75f, 0.75f);
+
+                GL.Color3(0.0f, 1.0f, 0.0f);
+                GL.Vertex2(0.75f, 0.75f);
+
+                GL.Color3(1.0f, 0.0f, 0.0f);
+                GL.Vertex2(0.75f, 0.75f);
+
+                GL.Color3(0.0f, 0.0f, 1.0f);
+                GL.Vertex2(0.75f, -0.75f);
+
+                GL.Color3(0.0f, 1.0f, 0.0f);
+                GL.Vertex2(-0.75f, -0.75f);
+
+                GL.Color4(1.0f, 1.0f, 1.0f, .5f);
+                GL.Vertex2(0.0f, 0.0f);
+
+                GL.Color4(1.0f, 1.0f, 1.0f, .5f);
+                GL.Vertex2(0.0f, 1.0f);
+
+                GL.Color4(1.0f, 1.0f, 1.0f, .5f);
+                GL.Vertex2(1.0f, 0.0f);
+            }
+            GL.End();
+        }
+    }
+
+    class Example04 : Example03
+    {
+        public Example04() : base()
+        {
+        }
+
+        protected override void OnLoad(EventArgs e)
+        {
+            base.OnLoad(e);
+            GL.Enable(EnableCap.DepthTest);
+            GL.DepthFunc(DepthFunction.Lequal);
+        }
+
+        protected override void CustomRenderFrame(double delta)
+        {
+            GL.ClearDepth(1);
+            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
+
+            GL.Begin(BeginMode.Triangles);
+            {
+                GL.Color3(1.0f, 0.0f, 0.0f);
+                GL.Vertex3(-0.75f, -0.75f, 0.5f);
+
+                GL.Color3(0.0f, 0.0f, 1.0f);
+                GL.Vertex3(-0.75f, 0.75f, 0.5f);
+
+                GL.Color3(0.0f, 1.0f, 0.0f);
+                GL.Vertex3(0.75f, 0.75f, 0.5f);
+
+                GL.Color4(1.0f, 1.0f, 1.0f, .5f);
+                GL.Vertex3(0.0f, 0.0f, 0.75f);
+
+                GL.Color4(1.0f, 1.0f, 1.0f, .5f);
+                GL.Vertex3(0.0f, 1.0f, 0.75f);
+
+                GL.Color4(1.0f, 1.0f, 1.0f, .5f);
+                GL.Vertex3(1.0f, 0.0f, 0.75f);
+            }
+            GL.End();
+
+        }
+    }
     class Program
     {
         static void Main(string[] args)
         {
-            using (Example02 game = new Example02() )
+            using (Example04 game = new Example04() )
             {
                 game.Run(30.0);
             }
