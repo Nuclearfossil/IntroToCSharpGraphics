@@ -4,6 +4,7 @@ using OpenTK.Graphics.OpenGL;
 using System.Drawing.Imaging;
 using System.Drawing;
 using System.Collections.Generic;
+using OpenTK.Input;
 
 /// This first example project illustrates simple GL graphics primitives in screen space.
 ///
@@ -16,7 +17,7 @@ namespace BBIU_CSharp_Native
 
     abstract class ExampleBase : GameWindow
     {
-        public ExampleBase() : base(1024, 768, new OpenTK.Graphics.GraphicsMode(32, 8, 0, 0))
+        public ExampleBase() : base(1024, 768, new OpenTK.Graphics.GraphicsMode(32, 16, 0, 0))
         { }
 
         protected override void OnLoad(EventArgs e)
@@ -26,6 +27,16 @@ namespace BBIU_CSharp_Native
             Title = "Intro to OpenGL Graphics";
 
             GL.ClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+        }
+
+        protected override void OnUpdateFrame(FrameEventArgs e)
+        {
+            base.OnUpdateFrame(e);
+
+            if (Keyboard[Key.Escape])
+            {
+                Exit();
+            }
         }
 
         protected override void OnRenderFrame(FrameEventArgs e)
@@ -182,6 +193,7 @@ namespace BBIU_CSharp_Native
             base.OnLoad(e);
             GL.Enable(EnableCap.DepthTest);
             GL.DepthFunc(DepthFunction.Lequal);
+            GL.Enable(EnableCap.CullFace);
         }
 
         protected override void CustomRenderFrame(double delta)
@@ -215,7 +227,7 @@ namespace BBIU_CSharp_Native
     }
 
     /// <summary>
-    /// Texture Example
+    /// Very simple texture example
     /// </summary>
     class Example05 : ExampleBase
     {
@@ -265,6 +277,169 @@ namespace BBIU_CSharp_Native
             GL.End();
         }
 
+    }
+
+    abstract class ExampleBase3D : ExampleBase
+    {
+        protected override void OnLoad(EventArgs e)
+        {
+            base.OnLoad(e);
+
+            GL.Enable(EnableCap.CullFace);
+            GL.CullFace(CullFaceMode.Back);
+            GL.Enable(EnableCap.DepthTest);
+            GL.Enable(EnableCap.DepthClamp);
+
+            GL.DepthMask(true);
+        }
+
+        protected override void OnResize(EventArgs e)
+        {
+            base.OnResize(e);
+
+            GL.Viewport(0, 0, Width, Height);
+            double aspectRatio = Width / (double)Height;
+            float fov = 1.00899694f;
+            float nearPlane = 1.0f;
+            float farPlane = 100.0f;
+
+            Matrix4 perspective = Matrix4.CreatePerspectiveFieldOfView(fov, (float)aspectRatio, nearPlane, farPlane);
+            GL.MatrixMode(MatrixMode.Projection);
+            GL.LoadMatrix(ref perspective);
+        }
+    }
+
+    class Camera
+    {
+        // Standard Cartesian co-ordinate frame
+        public float X { get; set; }
+        public float Y { get; set; }
+        public float Z { get; set; }
+
+        // Euler angles for rotation (yes, gimble lock)
+        public float Yaw { get; set; }
+        public float Pitch { get; set; }
+        public float Roll { get; set; }
+
+        public Camera(float x=0.0f, float y=0.0f, float z=0.0f)
+        {
+            X = x;
+            Y = y;
+            Z = z;
+        }
+
+        public void Update()
+        {
+            // Simple rotation about the Y axis
+            float z = Z;
+            Z = z * (float)Math.Cos(Yaw) - X * (float)Math.Sin(Yaw);
+            X = z * (float)Math.Sin(Yaw) + X * (float)Math.Cos(Yaw);
+
+               Matrix4 lookat = Matrix4.LookAt(X, Y, Z, 0, 0, 0, 0, 1, 0);
+            GL.MatrixMode(MatrixMode.Modelview);
+            GL.LoadMatrix(ref lookat);
+
+            Yaw += Yaw;
+        }
+    }
+
+    class Example06 : ExampleBase3D
+    {
+        private Camera Camera3D = new Camera(5, 5, 5);
+
+        protected override void CustomRenderFrame(double delta)
+        {
+            Camera3D.Yaw = 0.01f;
+
+            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
+
+            DrawGrid(Color.Green, 0.0f, 0.0f, 1);
+
+            Camera3D.Update();
+
+            GL.Begin(BeginMode.Quads);
+            {
+                // Front face
+                GL.Color3(System.Drawing.Color.Red);
+                GL.Vertex3(1, 1, 0);
+                GL.Vertex3(-1, 1, 0);
+                GL.Vertex3(-1, -1, 0);
+                GL.Vertex3(1, -1, 0);
+
+                // Side face
+                GL.Color3(System.Drawing.Color.Blue);
+                GL.Vertex3(1, 1, 0);
+                GL.Vertex3(1, -1, 0);
+                GL.Vertex3(1, -1, -2);
+                GL.Vertex3(1, 1, -2);
+
+                // Top face
+                GL.Color3(System.Drawing.Color.Green);
+                GL.Vertex3(1, 1, 0);
+                GL.Vertex3(1, 1, -2);
+                GL.Vertex3(-1, 1, -2);
+                GL.Vertex3(-1, 1, 0);
+
+                // Other Side face
+                GL.Color3(System.Drawing.Color.White);
+                GL.Vertex3(-1, 1, 0);
+                GL.Vertex3(-1, 1, -2);
+                GL.Vertex3(-1, -1, -2);
+                GL.Vertex3(-1, -1, 0);
+
+                GL.Color3(System.Drawing.Color.Red);
+                GL.Vertex3(1, 1, -2);
+                GL.Vertex3(1, -1, -2);
+                GL.Vertex3(-1, -1, -2);
+                GL.Vertex3(-1, 1, -2);
+
+                // Bottom missing on purpose
+            }
+            GL.End();
+
+        }
+
+        public void DrawGrid(System.Drawing.Color color, float X, float Z, int cell_size = 16, int grid_size = 256)
+        {
+            int dX = (int)Math.Round(X / cell_size) * cell_size;
+            int dZ = (int)Math.Round(Z / cell_size) * cell_size;
+
+            int ratio = grid_size / cell_size;
+
+            GL.Enable(EnableCap.LineSmooth);
+            GL.Enable(EnableCap.Blend);
+            GL.BlendFunc(BlendingFactorSrc.SrcAlpha, BlendingFactorDest.OneMinusSrcAlpha);
+            GL.LineWidth(1.5f);
+            GL.Hint(HintTarget.LineSmoothHint, HintMode.Nicest);
+
+            GL.PushMatrix();
+
+            GL.Translate(dX - grid_size / 2, 0, dZ - grid_size / 2);
+
+            int i;
+
+            GL.Color3(color);
+            GL.Begin(BeginMode.Lines);
+
+            for (i = 0; i < ratio + 1; i++)
+            {
+                int current = i * cell_size;
+
+                GL.Vertex3(current, 0, 0);
+                GL.Vertex3(current, 0, grid_size);
+
+                GL.Vertex3(0, 0, current);
+                GL.Vertex3(grid_size, 0, current);
+            }
+
+            GL.End();
+
+            GL.PopMatrix();
+
+            GL.Disable(EnableCap.LineSmooth);
+            GL.Disable(EnableCap.Blend);
+
+        }
     }
 
     class ContentPipeline
@@ -317,7 +492,7 @@ namespace BBIU_CSharp_Native
     {
         static void Main(string[] args)
         {
-            using (Example05 game = new Example05() )
+            using (Example06 game = new Example06() )
             {
                 game.Run(30.0);
             }
