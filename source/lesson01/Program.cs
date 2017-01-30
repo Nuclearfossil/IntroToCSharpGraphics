@@ -29,16 +29,6 @@ namespace BBIU_CSharp_Native
             GL.ClearColor(0.0f, 0.0f, 0.0f, 0.0f);
         }
 
-        protected override void OnUpdateFrame(FrameEventArgs e)
-        {
-            base.OnUpdateFrame(e);
-
-            if (Keyboard[Key.Escape])
-            {
-                Exit();
-            }
-        }
-
         protected override void OnRenderFrame(FrameEventArgs e)
         {
             base.OnRenderFrame(e);
@@ -49,9 +39,14 @@ namespace BBIU_CSharp_Native
 
         }
 
-        protected override void OnResize(EventArgs e)
+        protected override void OnUpdateFrame(FrameEventArgs e)
         {
-            base.OnResize(e);
+            base.OnUpdateFrame(e);
+
+            if (Keyboard[Key.Escape])
+            {
+                Exit();
+            }
         }
 
         protected abstract void CustomRenderFrame(double delta);
@@ -193,7 +188,6 @@ namespace BBIU_CSharp_Native
             base.OnLoad(e);
             GL.Enable(EnableCap.DepthTest);
             GL.DepthFunc(DepthFunction.Lequal);
-            GL.Enable(EnableCap.CullFace);
         }
 
         protected override void CustomRenderFrame(double delta)
@@ -492,7 +486,12 @@ namespace BBIU_CSharp_Native
     {
         static void Main(string[] args)
         {
-            using (Example06 game = new Example06() )
+            //using (Example01 game = new Example01() )
+            using (Example02 game = new Example02())
+            //using (Example03 game = new Example03())
+            //using (Example04 game = new Example04())
+            //using (Example05 game = new Example05())
+            //using (Example06 game = new Example06())
             {
                 game.Run(30.0);
             }
