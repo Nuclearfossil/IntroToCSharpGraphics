@@ -156,4 +156,80 @@ If you've been plaing around with rendering your own triangles, you may have not
 
 ![GLCoordinate](docresources\OpenGL_CoordinateSystem.png)
 
-Remember that the camera is looking down the Z axis. This means that from the camera perspective Z increments positively towards the camera and negatively away. 
+Remember that the camera is looking down the Z axis. This means that from the camera perspective Z increments positively towards the camera and negatively away.
+
+So, in our next example, we do the following:
+
+    protected override void CustomRenderFrame(double delta)
+    {
+        GL.ClearDepth(1);
+        GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
+
+        GL.Begin(BeginMode.Triangles);
+        {
+            GL.Color3(1.0f, 0.0f, 0.0f);
+            GL.Vertex3(-0.75f, -0.75f, 0.5f);
+
+            GL.Color3(0.0f, 0.0f, 1.0f);
+            GL.Vertex3(-0.75f, 0.75f, 0.5f);
+
+            GL.Color3(0.0f, 1.0f, 0.0f);
+            GL.Vertex3(0.75f, 0.75f, 0.5f);
+
+            GL.Color3(1.0f, 1.0f, 1.0f);
+            GL.Vertex3(0.0f, 0.0f, 0.75f);
+
+            GL.Color3(1.0f, 1.0f, 1.0f);
+            GL.Vertex3(0.0f, 1.0f, 0.75f);
+
+            GL.Color3(1.0f, 1.0f, 1.0f);
+            GL.Vertex3(1.0f, 0.0f, 0.75f);
+        }
+        GL.End();
+
+    }
+
+First, we clear our depth buffer (it gets cleared to 1). Then we draw two sets of data - one triangle at a Z depth of 0.5f and the other at a depth of 0.75f. And they look like they are displaying correctly (and, of course they are). But what happens if you change the order? Like so:
+
+    GL.Begin(BeginMode.Triangles);
+    {
+            GL.Color3(1.0f, 1.0f, 1.0f);
+            GL.Vertex3(0.0f, 0.0f, 0.75f);
+
+            GL.Color3(1.0f, 1.0f, 1.0f);
+            GL.Vertex3(0.0f, 1.0f, 0.75f);
+
+            GL.Color3(1.0f, 1.0f, 1.0f);
+            GL.Vertex3(1.0f, 0.0f, 0.75f);
+
+            GL.Color3(1.0f, 0.0f, 0.0f);
+            GL.Vertex3(-0.75f, -0.75f, 0.5f);
+
+            GL.Color3(0.0f, 0.0f, 1.0f);
+            GL.Vertex3(-0.75f, 0.75f, 0.5f);
+
+            GL.Color3(0.0f, 1.0f, 0.0f);
+            GL.Vertex3(0.75f, 0.75f, 0.5f);
+
+    }
+    GL.End();
+
+We end up (hopefully) with different results as before. what we end up seeing is that the order in which we present the data to the renderer matters. This is commonly known as the 'Painters Algorithm'. We can't always assume that we can sort the triangles before sending them to OpenGL. So we use the Depth buffer to determine if the pixel to be rendered should be consumed or discarded.  In order to enable that, we need to enable the Depth test. That's fairly simple to do:
+
+    protected override void OnLoad(EventArgs e)
+    {
+        base.OnLoad(e);
+        GL.Enable(EnableCap.DepthTest);
+        GL.DepthFunc(DepthFunction.Lequal);
+    }
+
+Adding this code and reverting your original changes should result in the triangles being rendered correctly.
+
+When we get into more 'proper' 3D, we'll discuss how the depth buffer works in conjunction with the projection matrix.
+
+# Lesson01 - Example 05: Drawing using textures
+
+This will cover a bit more content including:
++ How to load a texture and OpenGL's Texture functions
++ Mipmapping
++ UV coordinates

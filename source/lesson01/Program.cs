@@ -186,8 +186,8 @@ namespace BBIU_CSharp_Native
         protected override void OnLoad(EventArgs e)
         {
             base.OnLoad(e);
-            GL.Enable(EnableCap.DepthTest);
-            GL.DepthFunc(DepthFunction.Lequal);
+            //GL.Enable(EnableCap.DepthTest);
+            //GL.DepthFunc(DepthFunction.Lequal);
         }
 
         protected override void CustomRenderFrame(double delta)
@@ -206,13 +206,13 @@ namespace BBIU_CSharp_Native
                 GL.Color3(0.0f, 1.0f, 0.0f);
                 GL.Vertex3(0.75f, 0.75f, 0.5f);
 
-                GL.Color4(1.0f, 1.0f, 1.0f, .5f);
+                GL.Color3(1.0f, 1.0f, 1.0f);
                 GL.Vertex3(0.0f, 0.0f, 0.75f);
 
-                GL.Color4(1.0f, 1.0f, 1.0f, .5f);
+                GL.Color3(1.0f, 1.0f, 1.0f);
                 GL.Vertex3(0.0f, 1.0f, 0.75f);
 
-                GL.Color4(1.0f, 1.0f, 1.0f, .5f);
+                GL.Color3(1.0f, 1.0f, 1.0f);
                 GL.Vertex3(1.0f, 0.0f, 0.75f);
             }
             GL.End();
@@ -486,8 +486,8 @@ namespace BBIU_CSharp_Native
     {
         static void Main(string[] args)
         {
-            //using (Example01 game = new Example01() )
-            using (Example02 game = new Example02())
+            using (Example01 game = new Example01() )
+            //using (Example02 game = new Example02())
             //using (Example03 game = new Example03())
             //using (Example04 game = new Example04())
             //using (Example05 game = new Example05())
