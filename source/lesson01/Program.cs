@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
 using System.Drawing.Imaging;
@@ -482,6 +482,7 @@ namespace BBIU_CSharp_Native
             return texID;
         }
     }
+
     class Program
     {
         static void Main(string[] args)

@@ -230,6 +230,37 @@ When we get into more 'proper' 3D, we'll discuss how the depth buffer works in c
 # Lesson01 - Example 05: Drawing using textures
 
 This will cover a bit more content including:
+
 + How to load a texture and OpenGL's Texture functions
 + Mipmapping
 + UV coordinates
+
+How do we load up a texture to feed into OpenGL? We can use the standard bitmap class to read in the data. The problem is, how do we pull the bits in the bitmap into OpenGL? We can access the bits of a bitmap with the `LockBits` method. This gives us a `BitmapData` that we can use to copy the image data into OpenGL.
+
+Normally we keep a reference or pointer to reuse later. In OpenGL we use numerical IDs to identify resources. We'll create a TextureID using the `GL.GenTexture()` method. We then use the `GL.TexImage2D()` method to copy the image data into the Texture resource.
+
+The last thing we want to do is set up our texture filtering and generate mipmaps. What are Mipmaps? It's a way to increase speed when you're using a textured triangle at a distance.
+
+Think about it, when you are rending a texture where the pixels of the triangle are smaller than what they would be in the source image, we don't need all that extra data. So we would want to use a smaller version of the image. Which is what a mipmap functionally is. But not just one image, but a cascading pyramid of scaled textures.
+
+See the [wikipedia](https://en.wikipedia.org/wiki/Mipmap) article for more information.
+
+That's what my `LoadTexture()` and `LoadImage()` methods do. Once we have the texture loaded, we generate the mipmaps for that texture with the `GL.GenerateMpimaps()` method.
+
+The last thing is that I've created a `ContentPipeline` class that holds a dictionary of strings and IDs. The goal here is to keep from re-creating the same texture resource - we simply key a resource to the filename.
+
+Finally, when we want to draw a textured polygon we need to initialize OpenGL to use textures. In `Example05` I've updated the class to enable textures like so:
+
+    protected override void OnLoad(EventArgs e)
+    {
+        base.OnLoad(e);
+
+        GL.Enable(EnableCap.Texture2D);
+
+        // Load up any resources we need
+        mSampleImageTextureID = ContentPipeline.LoadTexture("resources/SampleImage01.png");
+    }
+
+Now that we have a Texture ID in the `mSampleImageTextureID` variable, we can use that when rendering our next triangle. In order to render a textured triangle, instead of (or in addition to) using `GL.Color4()`, we use `GL.TexCoord2()` to define the texture coordinate for the vertex.
+
+So what does that mean, Texture Coordinate lookup? Essentially for every Vertex that we have, we can look up a color value for it in a texture. Much like the colors that you saw in the previous examples, a linear look up is done on that texture as well.
