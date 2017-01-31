@@ -237,7 +237,6 @@ namespace BBIU_CSharp_Native
             mSampleImageTextureID = ContentPipeline.LoadTexture("resources/SampleImage01.png");
         }
 
-
         protected override void CustomRenderFrame(double delta)
         {
             GL.ClearDepth(1);
@@ -487,11 +486,11 @@ namespace BBIU_CSharp_Native
     {
         static void Main(string[] args)
         {
-            using (Example01 game = new Example01() )
+            //using (Example01 game = new Example01() )
             //using (Example02 game = new Example02())
             //using (Example03 game = new Example03())
             //using (Example04 game = new Example04())
-            //using (Example05 game = new Example05())
+            using (Example05 game = new Example05())
             //using (Example06 game = new Example06())
             {
                 game.Run(30.0);

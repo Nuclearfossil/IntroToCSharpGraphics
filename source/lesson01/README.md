@@ -8,7 +8,7 @@ understanding of the underlying tech and process that goes on under the hood to 
 The structure of the `introductory` project is one source file `Program.cs` that you can swap out `ExampleNN` classes to see different
 implementations of concepts.
 
-# OpenGL
+# OpenGL 2D
 
 A few things to note about OpenGL.
 + OpenGL works like a state machine. You set the state of something and it stays set until you change it.
@@ -102,7 +102,7 @@ I think it's fairly obvious what those commands are doing, but to be safe
 
 ![Example01](docresources\Example01_01.png)
 
-# Lesson01 - Example 02: Getting an idea of sizing
+## Lesson 01 - Example 02: Getting an idea of sizing
 
 With that simple little example out of the way, let's continue with something a little more - throwing a couple of triangles on the screen to see the real extents of the Display coordinates. Essentially, the rendering code looks like this:
 
@@ -136,7 +136,7 @@ From this, we end up with the following:
 
 ![Example02](docresources\Example02_01.png)
 
-# Lesson01 - Example 03: Blending triangles
+## Lesson 01 - Example 03: Blending triangles
 
 Everyone knows what transparency is. Implementing it in OpenGL in the fixed function pipeline is fairly easy.  First off, we need to enable a specific feature in OpenGL - Blend. To do that we call
 
@@ -150,7 +150,7 @@ What does that do? The OpenGL blend function is defined [here](https://www.openg
 
 Given the current parameters, the source pixel's Alpha is used in the alpha test. Then the destination's alpha value is used (1-alpha). These are essentially scalars that are multiplied against the color values, both in the source and destination pixels and then the results are added together. I'll leave that as an exercise to the reader to work through the math.
 
-# Lesson01 - Example 04: Drawing without using the painter's algorithm
+## Lesson 01 - Example 04: Drawing without using the painter's algorithm
 
 If you've been plaing around with rendering your own triangles, you may have noticed that we've only been using `Vector2` functions to draw triangles. We've been doing this because we only needed 2 dimensions worth of data. However, what would happen if we used `Vector3` values? If we go that route, we end up using World Coordinates. From a cartesian standpoint, we end up with the following:
 
@@ -227,7 +227,7 @@ Adding this code and reverting your original changes should result in the triang
 
 When we get into more 'proper' 3D, we'll discuss how the depth buffer works in conjunction with the projection matrix.
 
-# Lesson01 - Example 05: Drawing using textures
+## Lesson 01 - Example 05: Drawing using textures
 
 This will cover a bit more content including:
 
@@ -264,3 +264,111 @@ Finally, when we want to draw a textured polygon we need to initialize OpenGL to
 Now that we have a Texture ID in the `mSampleImageTextureID` variable, we can use that when rendering our next triangle. In order to render a textured triangle, instead of (or in addition to) using `GL.Color4()`, we use `GL.TexCoord2()` to define the texture coordinate for the vertex.
 
 So what does that mean, Texture Coordinate lookup? Essentially for every Vertex that we have, we can look up a color value for it in a texture. Much like the colors that you saw in the previous examples, a linear look up is done on that texture as well.
+
+So, this is the source image:
+
+![SourceImage](docresources\Example05_01.png)
+
+So, when we want to render triangles with a texture, we need to provide a lookup into the image. This is what the UV coordinate are used for. The coordinate set ranged from (0, 0) to (1, 1). That's the top left of the image and to the bottom right of the image.
+
+So, if we draw a square (two triangles sharing an edge), like so:
+
+    GL.ClearDepth(1);
+    GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
+
+    GL.BindTexture(TextureTarget.Texture2D, mSampleImageTextureID);
+
+    GL.Begin(PrimitiveType.Triangles);
+    {
+        GL.Color4(1.0f, 1.0f, 1.0f, 1.0f);
+
+        GL.TexCoord2(0.0f, 0.0f);
+        GL.Vertex2(-0.5f, 0.5f);
+
+        GL.TexCoord2(1.0f, 0.0f);
+        GL.Vertex2(0.5f, 0.5f);
+
+        GL.TexCoord2(0.0f, 1.0f);
+        GL.Vertex2(-0.5f, -0.5f);
+
+        GL.TexCoord2(1.0f, 0.0f);
+        GL.Vertex2(0.5f, 0.5f);
+
+        GL.TexCoord2(1.0f, 1.0f);
+        GL.Vertex2(0.5f, -0.5f);
+
+        GL.TexCoord2(0.0f, 1.0f);
+        GL.Vertex2(-0.5f, -0.5f);
+
+    }
+    GL.End();
+    }
+
+A couple of new commands there. `GL.BindTexture` takes the texture we had previously loaded as `mSampleImageTextureID`. This preps the OpenGL state machine to use the texture (and does all the underlying texture loading). Now, when we providing a vertex, we must first provide a UV coordinate. Remember, it's a state machine - so we have to set the UV coordinate first. That's what the `GL_TexCoord2()` method does. The other thing to note is that we also set the vertex color as well - `GL.Color4(1.0f, 1.0f, 1.0f, 1.0f)`. That's shared across all the vertices. Again, that comes from it being a state machine. That gives us the following:
+
+![SourceImage](docresources\Example05_02.png)
+
+
+
+# OpenGL 3D
+
+OK, now we migrate away from 2D (although there's much more that can be covered) and into 3D. It starts getting more complex at this point, so we'll start with a simpler example (no texturing, just simple triangular objects).
+
+Remeber from Lesson01 - Example 04, we described the coordinate system OpenGL uses for 3D. So let's say we want to draw a cube. What does the coordinate set look like? Well, we can draw it out on paper first.
+
+![SourceImage](docresources\OpenGL3D_CubePrimitive.png)
+
+Pretty straightforward, nothing crazy complex there. So, how do we do all that crazy 3D stuff?
+
+## Lesson 01 - Example 06: Holy Moley 3D
+
+In order to do 3d, I'm going to make a new base class called `ExampleBase3D`, derived from `ExampleBase`. And now we introduce a few new concepts.
+
+### Face Culling
+
+Face culling is all about performance. Drawing a triangle is expensive. Drawing over the same area on screen is expensive. So if we can reject a triangle from drawing, we can get a fair bit of a performance boost. So, how does culling work? It's based on the order in which the vertices of a triangle are described when it faces the viewer.  In our previous examples, the position of the viewer is, surprise, surprise, where you sit. Starting with the first vertex of the triangle, the order can either be clockwise or counter-clockwise. OpenGL is smart enough to be able to cull either way. Or not cull at all. So, in our overriden `OnLoad()` method we have the following:
+
+    base.OnLoad(e);
+
+    GL.Enable(EnableCap.CullFace);
+    GL.CullFace(CullFaceMode.Back);
+    GL.Enable(EnableCap.DepthTest);
+    GL.Enable(EnableCap.DepthClamp);
+
+    GL.DepthMask(true);
+
+In order:
+
++ `GL.Enable(EnableCap.CullFace)` enabled triangle culling.
++ `GL.CullFace(CullFaceMode.Back)` enable Back-face culling.
+
+The other bits we've already covered in other examples.
+
+In the next section we need to talk about the transformation pipeline. We've already alluded to it in the past (when talking about 2D rendering) but now it's time to go into more detail. I love this site's explaination of it:
+
+[Songho.ca](http://www.songho.ca/opengl/gl_transform.html)
+
+![TransformPipeline](docresources\Example06_01.png)
+
+Looking at the image, we have been dealing with Normalized Device Coordinates > Viewport Transform > Windows Coordinates.
+
+We're dealing with a 3D object (a set of triangles) that needs to be projected onto a 2D surface (the monitor). We do that (and a few other things) through the use of a projection matrix. 
+
+What does the projection matrix do? It does a couple of things. First, it defines the aspect ration of the 'window' that the 3D objects will be rendered to. Why is that important? Well, assume that we don't have a square window - that's very possible. If we don't into account the non-square-ness of the window, you can end up with stretch or squashed transformed triangles. Additionally, we need to take into account the near and far planes of the rendering 'Frustum' - the Frustum is a conical shape, a pyramid, with the top point cut off. Where the top is cut off is your monitor's screen. The bottom of the pyramid is the furthest that you will want to render. Additionally, you want to track the Field of View (vertical) for rendering. I may go into more detail on this in a later update if need be.
+
+    protected override void OnResize(EventArgs e)
+    {
+        base.OnResize(e);
+
+        GL.Viewport(0, 0, Width, Height);
+        double aspectRatio = Width / (double)Height;
+        float fov = 1.00899694f;
+        float nearPlane = 1.0f;
+        float farPlane = 100.0f;
+
+        Matrix4 perspective = Matrix4.CreatePerspectiveFieldOfView(fov, (float)aspectRatio, nearPlane, farPlane);
+        GL.MatrixMode(MatrixMode.Projection);
+        GL.LoadMatrix(ref perspective);
+    }
+
+So what we have now is a matrix that we can pass all vertices throught to project them onto the screen. If a triangle falls partially outside of the frustum, it's clipped. If the triangle is completely outside of the frustum, it's rejected.
