@@ -308,6 +308,9 @@ A couple of new commands there. `GL.BindTexture` takes the texture we had previo
 
 ![SourceImage](docresources\Example05_02.png)
 
+Please notice that the texture hasn't maintained the aspect ratio of the source pixels. It's compressed to fit inside the rectangle.
+
+Play around with the UV coordinates to see what happens when you change them.
 
 
 # OpenGL 3D
@@ -371,4 +374,7 @@ What does the projection matrix do? It does a couple of things. First, it define
         GL.LoadMatrix(ref perspective);
     }
 
-So what we have now is a matrix that we can pass all vertices throught to project them onto the screen. If a triangle falls partially outside of the frustum, it's clipped. If the triangle is completely outside of the frustum, it's rejected.
+So what we have now is a matrix that we can pass all vertices throught to project them onto the screen. If a triangle falls partially outside of the frustum, it's clipped. If the triangle is completely outside of the frustum, it's rejected. 
+
+>> Need to illustrate this properly <<
+>
