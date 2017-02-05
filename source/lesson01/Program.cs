@@ -6,6 +6,9 @@ using System.Drawing;
 using System.Collections.Generic;
 using OpenTK.Input;
 
+using ImGuiNET;
+using System.Numerics;
+
 /// This first example project illustrates simple GL graphics primitives in screen space.
 ///
 /// We don't talk about initializing windowing systems (that's taken care by OpenTK). However
@@ -61,7 +64,7 @@ namespace BBIU_CSharp_Native
         { }
 
         protected override void CustomRenderFrame(double delta)
-        {            
+        {
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
             GL.Begin(BeginMode.Triangles);
@@ -328,7 +331,7 @@ namespace BBIU_CSharp_Native
             Z = z * (float)Math.Cos(Yaw) - X * (float)Math.Sin(Yaw);
             X = z * (float)Math.Sin(Yaw) + X * (float)Math.Cos(Yaw);
 
-               Matrix4 lookat = Matrix4.LookAt(X, Y, Z, 0, 0, 0, 0, 1, 0);
+            Matrix4 lookat = Matrix4.LookAt(X, Y, Z, 0, 0, 0, 0, 1, 0);
             GL.MatrixMode(MatrixMode.Modelview);
             GL.LoadMatrix(ref lookat);
 
@@ -486,11 +489,11 @@ namespace BBIU_CSharp_Native
     {
         static void Main(string[] args)
         {
-            //using (Example01 game = new Example01() )
+            using (Example01 game = new Example01() )
             //using (Example02 game = new Example02())
             //using (Example03 game = new Example03())
             //using (Example04 game = new Example04())
-            using (Example05 game = new Example05())
+            //using (Example05 game = new Example05())
             //using (Example06 game = new Example06())
             {
                 game.Run(30.0);

@@ -11,6 +11,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		..\README.md = ..\README.md
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShaderIntroduction", "ShaderIntroduction\ShaderIntroduction.csproj", "{CA534534-B76E-4989-A014-E9DF26F3B5D3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{1F9FD662-C482-4EC4-B055-1599934DC149}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1F9FD662-C482-4EC4-B055-1599934DC149}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1F9FD662-C482-4EC4-B055-1599934DC149}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CA534534-B76E-4989-A014-E9DF26F3B5D3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CA534534-B76E-4989-A014-E9DF26F3B5D3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CA534534-B76E-4989-A014-E9DF26F3B5D3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CA534534-B76E-4989-A014-E9DF26F3B5D3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
