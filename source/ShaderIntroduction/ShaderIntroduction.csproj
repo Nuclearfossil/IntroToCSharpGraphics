@@ -52,6 +52,7 @@
     <Compile Include="ExampleBase.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="QuaternionCamera.cs" />
     <Compile Include="RenderGrid.cs" />
     <Compile Include="TextureManager.cs" />
   </ItemGroup>

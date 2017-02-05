@@ -12,7 +12,7 @@ namespace ShaderIntroduction
         {
             base.OnLoad(e);
 
-            DrawGrid = new RenderGrid();
+            DrawGrid = new RenderGrid(); 
             DrawGrid.Initialize(System.Drawing.Color.Green, 0, 0, 10, 500);
 
             CurrentCamera.Position = new OpenTK.Vector3(10.0f, 10.0f, 10.0f);

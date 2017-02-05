@@ -2,8 +2,6 @@
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Input;
 
-using System.Drawing;
-using System.Collections.Generic;
 using System;
 
 namespace ShaderIntroduction
