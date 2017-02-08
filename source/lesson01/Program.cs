@@ -314,8 +314,6 @@ namespace BBIU_CSharp_Native
 
         // Euler angles for rotation (yes, gimble lock)
         public float Yaw { get; set; }
-        public float Pitch { get; set; }
-        public float Roll { get; set; }
 
         public Camera(float x=0.0f, float y=0.0f, float z=0.0f)
         {

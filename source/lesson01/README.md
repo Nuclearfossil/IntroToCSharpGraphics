@@ -374,7 +374,25 @@ What does the projection matrix do? It does a couple of things. First, it define
         GL.LoadMatrix(ref perspective);
     }
 
-So what we have now is a matrix that we can pass all vertices throught to project them onto the screen. If a triangle falls partially outside of the frustum, it's clipped. If the triangle is completely outside of the frustum, it's rejected. 
+So what we have now is a matrix that we can pass all vertices throught to project them onto the screen from world space. If a triangle falls partially outside of the frustum, it's clipped. If the triangle is completely outside of the frustum, it's rejected. 
 
->> Need to illustrate this properly <<
->
+Also note that we only update the projection matrix when we resize the window; The projection matrix does not take into account the position of the camera. The reason for that is that the camera doesn't actually rotate; objects rotate into the camera's view. More on that later.
+
+If you look at the `Camera` class, you'll see that it's fairly straight forward.
+
+ - The constructor takes an eye point.
+ - The Update rotates around the Y axis
+ - We feed the rotated eye position into `Matrix4.LookAt` to build the modelview matrix. We then feed that into the appropriate matrix slot.
+
+
+The only other thing to describe is the grid that we draw. This is nothing more than a set of lines, rendered with a bit of antialiasing `GL.Hint(HintTarget.LineSmoothHint, HintMode.Nicest);` and it's own modelview matrix `GL.PushMatrix();`, `GL.Translate(dX - grid_size / 2, 0, dZ - grid_size / 2);` and `GL.PopMatrix();`. As always, with the OpenGL state machine, if we need to bracket each state: `GL.Enables` must have a matching `GL.Disable`, `GL.PushMatrix` must have a corresponding `GL.PopMatrix`.
+
+## Summary
+
+That's about it for this project. I'll update it as I come across missing bits, clarify more things that I've only superficially covered. However, this really was only meant as a refresher in Legacy OpenGL. The next project will go into more 'modern' OpenGL (shaders).
+
+I've really glossed over a lot of details in this article (OpenGL matrices, Cameras). Rather than overtly ignore it, I've included links to, IMO, some great articles on those topics:
+
+ - (OpenGL Matrices)[http://www.opengl-tutorial.org/beginners-tutorials/tutorial-3-matrices/]
+ - (Transformations)[https://open.gl/transformations]
+ - (OpenGL FAQ)[https://www.opengl.org/archives/resources/faq/technical/transformations.htm]
