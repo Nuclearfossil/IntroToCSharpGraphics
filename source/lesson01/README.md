@@ -396,3 +396,7 @@ I've really glossed over a lot of details in this article (OpenGL matrices, Came
  - (OpenGL Matrices)[http://www.opengl-tutorial.org/beginners-tutorials/tutorial-3-matrices/]
  - (Transformations)[https://open.gl/transformations]
  - (OpenGL FAQ)[https://www.opengl.org/archives/resources/faq/technical/transformations.htm]
+ 
+ ## Todo
+  [ ] an example of lighting?
+  [ ] shadows?
