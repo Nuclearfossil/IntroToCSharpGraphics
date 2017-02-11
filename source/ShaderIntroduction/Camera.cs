@@ -1,5 +1,4 @@
 ﻿using OpenTK;
-using OpenTK.Graphics.OpenGL;
 using OpenTK.Input;
 using System;
 

@@ -10,7 +10,9 @@ In the Introduction project, a lot of things were put together hapdash. I've cor
 
 A fair bit has changed with this codebase. I've been a bit more regimented in how these classes were defined. They're also a bit more generalized and properly reusable. Some things to note:
 
- 1 The `ExampleBase` class Contains a `Camera` by default. It is never Updated (I may change this) so it is up to the derived class to update the camera.
- 2 The `Camera` class is a fairly rough FPS-style camera. I will be cleaning this up as we go. However, the `Camera` class also maintains the Projection matrix, as well as the View matrix. Traditionally, cameras maintain that information.
- 3 `TextureManager` is extracted into it's own class.
- 4 The same goes for the `RenderGrid` class.
+ 1. The `ExampleBase` class Contains a `Camera` by default. It is never Updated (I may change this) so it is up to the derived class to update the camera. 
+ 2. The `Camera` class is a fairly rough FPS-style camera. I will be cleaning this up as we go. However, the `Camera` class also maintains the Projection matrix, as well as the View matrix. Traditionally, cameras maintain that information.
+ 3. `TextureManager` is extracted into it's own class.
+ 4. The same goes for the `RenderGrid` class.
+ 
+In our previous codebase, we were using a more 'legacy' based version of OpenGL; this is the fixed function version of OpenGL that does not support shaders.  In this example, we're going to start talking about using proper shaders. 

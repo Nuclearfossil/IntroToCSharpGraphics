@@ -1,5 +1,6 @@
 ﻿using OpenTK;
-using OpenTK.Graphics.OpenGL;
+using OpenTK.Graphics;
+using OpenTK.Graphics.OpenGL4;
 using OpenTK.Input;
 
 using System;
@@ -11,7 +12,15 @@ namespace ShaderIntroduction
         protected Camera CurrentCamera;
 
         public ExampleBase() :
-            base(1024, 768, new OpenTK.Graphics.GraphicsMode(32, 16, 0, 0))
+            base(1280, // initial width
+            720, // initial height
+            GraphicsMode.Default,
+            "Shader Introductions",  // initial title
+            GameWindowFlags.Default,
+            DisplayDevice.Default,
+            4, // OpenGL major version
+            0, // OpenGL minor version
+            GraphicsContextFlags.ForwardCompatible)
         {
             CurrentCamera = new Camera(this);
         }
@@ -20,27 +29,13 @@ namespace ShaderIntroduction
         {
             base.OnLoad(e);
 
-            Title = "Shader Introduction";
             GL.ClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-
-            // Enable Blending
-            GL.Enable(EnableCap.Blend);
-            GL.BlendFunc(BlendingFactorSrc.SrcAlpha, BlendingFactorDest.OneMinusSrcAlpha);
-
-            // Depth Testing
-            GL.Enable(EnableCap.DepthTest);
-            GL.Enable(EnableCap.DepthClamp);
-            GL.DepthFunc(DepthFunction.Lequal);
-            GL.DepthMask(true);
-
-            // Face Culling
-            GL.Enable(EnableCap.CullFace);
-            GL.CullFace(CullFaceMode.Back);
         }
 
         protected override void OnRenderFrame(FrameEventArgs e)
         {
             base.OnRenderFrame(e);
+            Title = $"(Vsync: {VSync}) FPS: {1f / e.Time:0}";
 
             CustomRenderFrame(e.Time);
 
