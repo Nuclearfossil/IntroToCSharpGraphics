@@ -8,7 +8,6 @@ namespace ShaderIntroduction
     class Example01 : ExampleBase
     {
         private Shader BasicShader;
-
         private VertexBuffer vertexBuffer;
 
         protected override void OnLoad(EventArgs e)
@@ -37,15 +36,13 @@ namespace ShaderIntroduction
         {
             base.OnUpdateFrame(e);
 
-            var CameraPosition = new Vector3(0.5f, 0.5f, 0);
-            var ProjectionMatrix = Matrix4.CreatePerspectiveFieldOfView(MathHelper.PiOver4, 
-                                                                        Width / (float)Height,
-                                                                        0.5f,
-                                                                        1000.0f);
-            var WorldMatrix = Matrix4.CreateTranslation(-CameraPosition);
-            var ModelviewMatrix = Matrix4.CreateTranslation(0.0f, 0.0f, -2.0f);
+            CurrentCamera.Update();
 
-            Matrix4 ModelViewProjection = ModelviewMatrix * WorldMatrix * ProjectionMatrix;
+            var ProjectionMatrix = CurrentCamera.Projection;
+            var WorldMatrix = CurrentCamera.View;
+            var ModelViewMatrix = Matrix4.CreateTranslation(0.0f, 0.0f, 0.0f);
+
+            Matrix4 ModelViewProjection = ModelViewMatrix * WorldMatrix * ProjectionMatrix;
 
             GL.UseProgram(BasicShader.Program);
             int mvpLocation = GL.GetUniformLocation(BasicShader.Program, "mvp_matrix");

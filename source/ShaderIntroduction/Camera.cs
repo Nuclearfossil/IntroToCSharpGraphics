@@ -6,7 +6,7 @@ namespace ShaderIntroduction
 {
     public class Camera
     {
-        protected Vector3 mPosition = new Vector3(0, 0, 30);
+        protected Vector3 mPosition = new Vector3(0, 0, 5);
         protected Vector3 mUp = Vector3.UnitY;
         protected Vector3 mDirection;
 
