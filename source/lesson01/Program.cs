@@ -393,12 +393,12 @@ namespace BBIU_CSharp_Native
 
         }
 
-        public void DrawGrid(System.Drawing.Color color, float X, float Z, int cell_size = 16, int grid_size = 256)
+        public void DrawGrid(System.Drawing.Color color, float X, float Z, int cellSize = 16, int gridSize = 256)
         {
-            int dX = (int)Math.Round(X / cell_size) * cell_size;
-            int dZ = (int)Math.Round(Z / cell_size) * cell_size;
+            int dX = (int)Math.Round(X / cellSize) * cellSize;
+            int dZ = (int)Math.Round(Z / cellSize) * cellSize;
 
-            int ratio = grid_size / cell_size;
+            int cellCount = gridSize / cellSize;
 
             GL.Enable(EnableCap.LineSmooth);
             GL.Enable(EnableCap.Blend);
@@ -408,22 +408,22 @@ namespace BBIU_CSharp_Native
 
             GL.PushMatrix();
 
-            GL.Translate(dX - grid_size / 2, 0, dZ - grid_size / 2);
+            GL.Translate(dX - gridSize / 2, 0, dZ - gridSize / 2);
 
             int i;
 
             GL.Color3(color);
             GL.Begin(BeginMode.Lines);
 
-            for (i = 0; i < ratio + 1; i++)
+            for (i = 0; i < cellCount + 1; i++)
             {
-                int current = i * cell_size;
+                int current = i * cellSize;
 
                 GL.Vertex3(current, 0, 0);
-                GL.Vertex3(current, 0, grid_size);
+                GL.Vertex3(current, 0, gridSize);
 
                 GL.Vertex3(0, 0, current);
-                GL.Vertex3(grid_size, 0, current);
+                GL.Vertex3(gridSize, 0, current);
             }
 
             GL.End();

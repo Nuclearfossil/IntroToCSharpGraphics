@@ -110,12 +110,13 @@ namespace ShaderIntroduction
                 return;
             }
 
+            GL.UseProgram(shader.Program);
             GL.BindBuffer(BufferTarget.ArrayBuffer, mVertexBufferObjectID);
 
             GL.EnableVertexAttribArray(shader.PositionLocation);
             GL.EnableVertexAttribArray(shader.ColorLocation);
-            GL.VertexAttribPointer(shader.PositionLocation, 2, VertexAttribPointerType.Float, false, Stride, 0);
-            GL.VertexAttribPointer(shader.ColorLocation, 4, VertexAttribPointerType.Float, false, Stride, 8);
+            GL.VertexAttribPointer(shader.PositionLocation, 3, VertexAttribPointerType.Float, false, Stride, 0);
+            GL.VertexAttribPointer(shader.ColorLocation, 4, VertexAttribPointerType.Float, false, Stride, 12);
 
             GL.BindBuffer(BufferTarget.ElementArrayBuffer, mElementBufferObjectID);
             GL.DrawElements(DrawMode, mIndexPosition, DrawElementsType.UnsignedInt, 0);
@@ -124,6 +125,7 @@ namespace ShaderIntroduction
             GL.DisableVertexAttribArray(1);
             GL.DisableVertexAttribArray(2);
             GL.DisableVertexAttribArray(3);
+            GL.UseProgram(0);
         }
 
         public void Dispose()
@@ -134,11 +136,16 @@ namespace ShaderIntroduction
             mIndexData = null;
         }
 
-        public void AddIndex(uint indexA, uint indexB, uint indexC)
+        public void AddTriangle(uint indexA, uint indexB, uint indexC)
         {
             mIndexData[mIndexPosition++] = indexA;
             mIndexData[mIndexPosition++] = indexB;
             mIndexData[mIndexPosition++] = indexC;
+        }
+
+        public void AddIndex(uint index)
+        {
+            mIndexData[mIndexPosition++] = index;
         }
 
         public void AddVertex(float x, float y, float z, float r, float g, float b, float a)
