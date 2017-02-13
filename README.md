@@ -15,6 +15,11 @@ simplified content, rather than going the route of some Blog posts. We'll see ho
 
 # Lessons
 
-## Lesson 01 - Introduction to graphics in OpenGL.
+## source/lesson 01 - Introduction to graphics in OpenGL.
 
 ~ A few examples of working in pure 2D, an introduction to basic OpenGL commands and some buffer testing examples.
+
+## source/ShaderIntroduction
+
+~ How to work with shaders.
+

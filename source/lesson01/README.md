@@ -100,7 +100,7 @@ I think it's fairly obvious what those commands are doing, but to be safe
 
 `GL.Color3()` defines and RGB colour state that is to be used for every subsequent vertex fed into OpenGL via the `GL.Vertex2` call.  And thus we end up with the following output.
 
-![Example01](docresources\Example01_01.png)
+![Example01](docresources/Example01_01.png)
 
 ## Lesson 01 - Example 02: Getting an idea of sizing
 
@@ -134,7 +134,7 @@ With that simple little example out of the way, let's continue with something a 
 
 From this, we end up with the following:
 
-![Example02](docresources\Example02_01.png)
+![Example02](docresources/Example02_01.png)
 
 ## Lesson 01 - Example 03: Blending triangles
 
@@ -154,7 +154,7 @@ Given the current parameters, the source pixel's Alpha is used in the alpha test
 
 If you've been plaing around with rendering your own triangles, you may have noticed that we've only been using `Vector2` functions to draw triangles. We've been doing this because we only needed 2 dimensions worth of data. However, what would happen if we used `Vector3` values? If we go that route, we end up using World Coordinates. From a cartesian standpoint, we end up with the following:
 
-![GLCoordinate](docresources\OpenGL_CoordinateSystem.png)
+![GLCoordinate](docresources/OpenGL_CoordinateSystem.png)
 
 Remember that the camera is looking down the Z axis. This means that from the camera perspective Z increments positively towards the camera and negatively away.
 
@@ -267,7 +267,7 @@ So what does that mean, Texture Coordinate lookup? Essentially for every Vertex 
 
 So, this is the source image:
 
-![SourceImage](docresources\Example05_01.png)
+![SourceImage](docresources/Example05_01.png)
 
 So, when we want to render triangles with a texture, we need to provide a lookup into the image. This is what the UV coordinate are used for. The coordinate set ranged from (0, 0) to (1, 1). That's the top left of the image and to the bottom right of the image.
 
@@ -306,7 +306,7 @@ So, if we draw a square (two triangles sharing an edge), like so:
 
 A couple of new commands there. `GL.BindTexture` takes the texture we had previously loaded as `mSampleImageTextureID`. This preps the OpenGL state machine to use the texture (and does all the underlying texture loading). Now, when we providing a vertex, we must first provide a UV coordinate. Remember, it's a state machine - so we have to set the UV coordinate first. That's what the `GL_TexCoord2()` method does. The other thing to note is that we also set the vertex color as well - `GL.Color4(1.0f, 1.0f, 1.0f, 1.0f)`. That's shared across all the vertices. Again, that comes from it being a state machine. That gives us the following:
 
-![SourceImage](docresources\Example05_02.png)
+![SourceImage](docresources/Example05_02.png)
 
 Please notice that the texture hasn't maintained the aspect ratio of the source pixels. It's compressed to fit inside the rectangle.
 
@@ -319,7 +319,7 @@ OK, now we migrate away from 2D (although there's much more that can be covered)
 
 Remeber from Lesson01 - Example 04, we described the coordinate system OpenGL uses for 3D. So let's say we want to draw a cube. What does the coordinate set look like? Well, we can draw it out on paper first.
 
-![SourceImage](docresources\OpenGL3D_CubePrimitive.png)
+![SourceImage](docresources/OpenGL3D_CubePrimitive.png)
 
 Pretty straightforward, nothing crazy complex there. So, how do we do all that crazy 3D stuff?
 
@@ -351,7 +351,7 @@ In the next section we need to talk about the transformation pipeline. We've alr
 
 [Songho.ca](http://www.songho.ca/opengl/gl_transform.html)
 
-![TransformPipeline](docresources\Example06_01.png)
+![TransformPipeline](docresources/Example06_01.png)
 
 Looking at the image, we have been dealing with Normalized Device Coordinates > Viewport Transform > Windows Coordinates.
 
