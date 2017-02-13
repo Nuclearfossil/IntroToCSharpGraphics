@@ -6,7 +6,7 @@ In the previous section, we discussed the legacy OpenGL programming model (more 
 
 In the Introduction project, a lot of things were put together hapdash. I've corrected that in the `ShaderIntroduction` project:
 
-![Initial Class layout](docresources\InitialClassLayout.png)
+![Initial Class layout](docresources/InitialClassLayout.png)
 
 A fair bit has changed with this codebase. I've been a bit more regimented in how these classes were defined. They're also a bit more generalized and properly reusable. Some things to note:
 
@@ -44,7 +44,7 @@ However, in modern OpenGL, it is just a *buffer* of data. It has no inherent str
 
 If there is no inherent structure to the data, then how does it work? Let's walk through a simple example (which is what we use in the current codebase). Let's assume that right now the only data we want to work with is triangle data. A triangle consists of three vertices: X, Y and Z. We also want to colourized the triangle, so each vertex will have a color component (R, G, B, A). So for each vertex element, we are going to have something that looks like this:
 
-![VBO layout](docresources\VBOIntrospection01.png)
+![VBO layout](docresources/VBOIntrospection01.png)
 
 What we're saying here is that we're using 12 bytes (3 floats @ 4 bytes/float) to define the positional data of a vertex and 16 bytes (4 floats @ 4 bytes/float) for the color component. This results in a total of 28 bytes for the total data per vertex. This is called the `Stride` of the vertex data. What we have done here is created an `interleaved` data format. We end up with data that looks like this:
 
@@ -62,7 +62,7 @@ Using an interleaved format is probably the most performant, but there are alway
 
 It's also not just VBOs that you're interested in. You will also want to create an Index Buffer (OpenGL calls these Element Buffer Object or EBOs).  So, what is an EBO? What do we need these for?  Let's do a simple example to illustrate:
 
-![EBO layout](docresources\EBOIntrospection01.png)
+![EBO layout](docresources/EBOIntrospection01.png)
 
 So, what we've done is essentially reduce the amount of data that we need to represent a mesh.  If we store the data as pure triangles, with duplication, we end up with `2 Triangles x 3 vertices x 3 floats(x,y,z) x 4 bytes/vertex` (no color information in this case) - 72 bytes (168 bytes if we include color). However, using an index buffer, we reduce that to `4 vertices x 3 floats x 4 bytes/vertex` - 48 bytes. Adding the index buffer into the mix is `6 indices x 4 bytes` - 24 bytes. But that's assuming 4 bytes/index. Which we really, REALLY don't need to use. Remember, a `uint` gives us a grand total of 4,294,967,295 / 3 (1,431,655,765 triangles). I fear the day we need almost 1.5 billion triangles for games. So we could use half that (a `ushort` for instance) to get 65,000 triangles.
 
