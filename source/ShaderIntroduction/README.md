@@ -220,4 +220,49 @@ At this point, it's all on the shader:
  
 Where did that `gl_Position` variable come from? It's actually defined as part of OpenGL's vertex, tesselation evaluation and geometry languages. It's part of a global instance of the `gl_PerVertex` named block. It is an output that receives the homogeneous vertex position; the position of the vertex in screen space. See [khronos.org](https://www.khronos.org/registry/OpenGL-Refpages/gl4/html/gl_Position.xhtml) for a deeper breakdown. In other words, the GLSL vertex shader doesn't output any data, but it does allow us to populate global data in each shader stage.
 
-OK. What do I mean by 'each shader stage'. We've danced around this a bit. This shader we've just looked at? I've repeatedly called it the 'vertex shader'. That's arguably the first stage in the shading pipeline.
+OK. What do I mean by 'each shader stage'. We've danced around this a bit. This shader we've just looked at? I've repeatedly called it the 'vertex shader'. That's arguably the first stage in the shading pipeline. However there's a lot more to it than that.
+
+Personally, I love this diagram from (http://antongerdelan.net):
+
+![OpenGL 4 Hardware Pipeline](http://antongerdelan.net/opengl/images/hwpipe2.png)
+
+In all honesty, Anton's site does a fantastic job talking about the broad aspects of shaders. I'll try to do justice and dig a bit deeper into them and how we're using them.
+
+## Fragment/Pixel shaders
+
+As we've seen in the above diagarm, we've only touched on Vertex shaders. There's one last piece of the puzzle, and that's Pixel/Fragment shaders. I'll probably end up slipping and call them Pixel shaders more often than Fragment shaders, but I'm using them interchangibly.
+
+If you look at our C# code, you'll notice that we don't do anything with sending data to Pixel shaders. That's because all the data we're sending right now is generated in the Vertex shader. In a later article, I'll introduce how we would do that.
+
+So, the entire purpose of a pixel shader is, in all honesty, exactly that - how to shade pixels. Adding a color value to a pixel on the screen.
+
+From the vertex shader, we saw that we set the color output value to that of the vertex color:
+
+```
+  color = vertex_color;
+```
+
+This color is fed into the pixel shader (interpolated across the triangle).
+
+In the Pixel shader, we don't actually do a lot:
+
+```
+    #version 400
+
+    layout (location = 0) out vec4 frag_color;
+
+    in vec4 color;
+
+    void main(void)
+    {
+        frag_color = color;
+    }
+```
+
+It's incredibly simple - we set an output value bound to the pixel. In fragment shaders, you can think of this as the index of the output buffer that we are writing the pixel to. If we don't define one in out CPU code (C# code), and we weren't to explicitly add the `(location=0)` bit to our shader, if there is only ont `out` variable, the compiler will normally generate one for us. But don't do that.
+
+Thus, we're only writing out the interpolated color from the fragment shader.  That's it. Nothing terribly fancy. In a later lesson, I'll go over more.
+
+I think that's enough for this lesson. It's been a lot to write, as we're covering a lot of fundamentals.  The rest of the code is fairly self-explanitory.
+
+Until next time!
