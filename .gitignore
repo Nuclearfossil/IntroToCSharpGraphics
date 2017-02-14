@@ -2,3 +2,7 @@
 **/bin
 **/obj
 **/packages
+/source/DirectX11TestBed/x64
+*.filters
+*.user
+/source/x64
