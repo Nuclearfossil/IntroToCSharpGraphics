@@ -6,3 +6,5 @@
 *.filters
 *.user
 /source/x64
+/source/BBIU_CSharp.VC.db
+/source/BBIU_CSharp.VC.VC.opendb
