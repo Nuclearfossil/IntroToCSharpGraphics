@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 
 using SharpDX;
 using SharpDX.Direct3D11;
@@ -40,22 +40,33 @@ namespace D3D11Introduction
             mSwapChainDescription = new SwapChainDescription()
             {
                 BufferCount = 1,
-                ModeDescription = new ModeDescription(mRenderForm.ClientSize.Width, mRenderForm.ClientSize.Height,
-                                                        new Rational(60, 1),
-                                                        Format.R8G8B8A8_UNorm),
+                ModeDescription = 
+                    new ModeDescription(
+                        mRenderForm.ClientSize.Width,
+                        mRenderForm.ClientSize.Height,
+                        new Rational(60, 1),
+                        Format.R8G8B8A8_UNorm),
                 IsWindowed = true,
                 OutputHandle = mRenderForm.Handle,
                 SampleDescription = new SampleDescription(1, 0),
                 Usage = Usage.RenderTargetOutput
             };
 
-            D3DDevice.CreateWithSwapChain(D3DDriverType.Hardware, DeviceCreationFlags.None, mSwapChainDescription, out mDevice, out mSwapChain);
+            D3DDevice.CreateWithSwapChain(D3DDriverType.Hardware,
+                DeviceCreationFlags.None,
+                mSwapChainDescription,
+                out mDevice,
+                out mSwapChain);
+
             mDeviceContext = mDevice.ImmediateContext;
 
+            // Allows DXGI to monitor an application's message queue for the alt-enter key
+            // sequence.
             mFactory = mSwapChain.GetParent<Factory>();
             mFactory.MakeWindowAssociation(mRenderForm.Handle, WindowAssociationFlags.IgnoreAll);
 
-            mView = Matrix.LookAtLH(new Vector3(0, 0, -5), new Vector3(0, 0, 0), Vector3.UnitY);
+            mView = Matrix.LookAtLH(new Vector3(0, 0, -5), 
+                                    new Vector3(0, 0, 0), Vector3.UnitY);
             mProj = Matrix.Identity;
         }
 
@@ -113,7 +124,11 @@ namespace D3D11Introduction
             Utilities.Dispose(ref mDepthBuffer);
             Utilities.Dispose(ref mDepthView);
 
-            mSwapChain.ResizeBuffers(mSwapChainDescription.BufferCount, mRenderForm.ClientSize.Width, mRenderForm.ClientSize.Height, Format.Unknown, SwapChainFlags.None);
+            mSwapChain.ResizeBuffers(mSwapChainDescription.BufferCount, 
+                mRenderForm.ClientSize.Width, 
+                mRenderForm.ClientSize.Height, 
+                Format.Unknown, 
+                SwapChainFlags.None);
 
             mBackBuffer = Texture2D.FromSwapChain<Texture2D>(mSwapChain, 0);
             mRenderView = new RenderTargetView(mDevice, mBackBuffer);
@@ -133,7 +148,10 @@ namespace D3D11Introduction
 
             mDepthView = new DepthStencilView(mDevice, mDepthBuffer);
 
-            mDeviceContext.Rasterizer.SetViewport(new Viewport(0, 0, mRenderForm.ClientSize.Width, mRenderForm.ClientSize.Height, 0.0f, 1.0f));
+            mDeviceContext.Rasterizer.SetViewport(new Viewport(0, 0, 
+                                                    mRenderForm.ClientSize.Width,
+                                                    mRenderForm.ClientSize.Height,
+                                                    0.0f, 1.0f));
             mDeviceContext.OutputMerger.SetTargets(mDepthView, mRenderView);
 
             mProj = Matrix.PerspectiveFovLH((float)Math.PI / 4.0f, (float)mRenderForm.ClientSize.Width / (float)mRenderForm.ClientSize.Height, 0.1f, 100.0f);
