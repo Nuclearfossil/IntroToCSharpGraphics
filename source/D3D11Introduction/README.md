@@ -293,7 +293,13 @@ The function `PS` returns a `float4` - that represents a color of the pixel that
 
 So, that only leaves the `: SV_Target` bit on the pixel shader function definition.
 
-`SV_Target` is a type of 'System-Value' semantics; 
+`SV_Target` is a type of 'System-Value' semantics; it's defined as part of the HSLS compiler. When used in a pixel shader, it describes the pixel location.
+
+To summarize, the vertex shader does nothing more than transform the vertex (and thus the triangle) into screen space and then interpolate the color passed in to the vertex shader across the triangle.
+
+HLSL shader sematics can be found [here](https://goo.gl/3N8AnL).
+
+
 ## Additional links
 
  - [DirectX 11 Website](https://goo.gl/5kHKFz)
