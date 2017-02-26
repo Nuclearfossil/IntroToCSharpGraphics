@@ -11,7 +11,9 @@ namespace D3D11Introduction
         [STAThread]
         static void Main()
         {
-            ExampleBase example = new Example01();
+            // ExampleBase example = new Example01();
+            // ExampleBase example = new Example02();
+            ExampleBase example = new Example03();
 
             example.Initialize();
             example.Run();
