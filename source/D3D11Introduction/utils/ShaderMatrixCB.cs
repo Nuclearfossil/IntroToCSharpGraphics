@@ -10,7 +10,7 @@ using System.Runtime.InteropServices;
 
 namespace D3D11Introduction.utils
 {
-    public class Shader : IDisposable
+    public class ShaderMatrixCB : IDisposable
     {
         #region public members
         public ShaderSignature VertexShaderSignature
@@ -25,6 +25,7 @@ namespace D3D11Introduction.utils
         protected PixelShader mPixelShader = null;
         protected D3DBuffer mWVPConstantBuffer = null;
         protected D3DBuffer mLightConstantBuffer = null;
+        protected D3DBuffer mMatrixConstantBuffer = null;
         #endregion
 
         #region private members
@@ -32,6 +33,12 @@ namespace D3D11Introduction.utils
         private CompilationResult mPixelShaderResult;
         #endregion
 
+        [StructLayout(LayoutKind.Sequential)]
+        internal struct MatrixBuffer
+        {
+            public Matrix world;
+            public Matrix viewproj;
+        }
 
         [StructLayout(LayoutKind.Sequential)]
         internal struct LightBuffer
@@ -45,7 +52,7 @@ namespace D3D11Introduction.utils
         public string VertexShaderVersion { get; set; }
         public string PixelShaderVersion { get; set; }
 
-        public Shader()
+        public ShaderMatrixCB()
         {
             VertexShaderVersion = "vs_4_0";
             PixelShaderVersion = "ps_4_0";
@@ -72,8 +79,8 @@ namespace D3D11Introduction.utils
                 return false;
             }
 
-            mVertexShaderResult = ShaderBytecode.Compile(vsData, "VS", VertexShaderVersion);
-            mPixelShaderResult = ShaderBytecode.Compile(psData, "PS", PixelShaderVersion);
+            mVertexShaderResult = ShaderBytecode.Compile(vsData, "VS", VertexShaderVersion, ShaderFlags.Debug | ShaderFlags.SkipOptimization);
+            mPixelShaderResult = ShaderBytecode.Compile(psData, "PS", PixelShaderVersion, ShaderFlags.Debug | ShaderFlags.SkipOptimization);
 
             return (mVertexShaderResult.ResultCode == Result.Ok) &&
                     (mPixelShaderResult.ResultCode == Result.Ok);
@@ -96,6 +103,18 @@ namespace D3D11Introduction.utils
                                                 CpuAccessFlags.None,
                                                 ResourceOptionFlags.None, 0);
 
+                BufferDescription matrixBufferDesc = new BufferDescription()
+                {
+                    Usage = ResourceUsage.Dynamic,
+                    SizeInBytes = Utilities.SizeOf<MatrixBuffer>(),
+                    BindFlags = BindFlags.ConstantBuffer,
+                    CpuAccessFlags = CpuAccessFlags.Write,
+                    OptionFlags = ResourceOptionFlags.None,
+                    StructureByteStride = 0
+                };
+
+                mMatrixConstantBuffer = new D3DBuffer(device, matrixBufferDesc);
+
                 BufferDescription lightBufferDesc = new BufferDescription()
                 {
                     Usage = ResourceUsage.Dynamic,
@@ -114,7 +133,7 @@ namespace D3D11Introduction.utils
                     (VertexShaderSignature != null);
         }
 
-        public void SetShaderParam(D3DDevice device, Matrix wvp, Vector3 lightDirection, Vector4 ambientColor, Vector4 diffuseColour)
+        public void SetShaderParam(D3DDevice device, Matrix wvp, Vector3 lightDirection, Vector4 ambientColor, Vector4 diffuseColour, ref Matrix world, ref Matrix viewproj)
         {
             LightBuffer lightBuffer = new LightBuffer()
             {
@@ -124,8 +143,20 @@ namespace D3D11Introduction.utils
                 padding = 0
             };
 
+            MatrixBuffer matrixBuffer = new MatrixBuffer()
+            {
+                world = world,
+                viewproj = viewproj
+            };
+
             device.ImmediateContext.UpdateSubresource(ref wvp, mWVPConstantBuffer);
             device.ImmediateContext.VertexShader.SetConstantBuffer(0, mWVPConstantBuffer);
+
+            device.ImmediateContext.MapSubresource(mMatrixConstantBuffer, MapMode.WriteDiscard, MapFlags.None, out DataStream mappedResourceMatrix);
+            mappedResourceMatrix.Write(matrixBuffer);
+            device.ImmediateContext.UnmapSubresource(mMatrixConstantBuffer, 0);
+
+            device.ImmediateContext.VertexShader.SetConstantBuffer(1, mMatrixConstantBuffer);
 
             device.ImmediateContext.MapSubresource(mLightConstantBuffer, MapMode.WriteDiscard, MapFlags.None, out DataStream mappedResourceLight);
             mappedResourceLight.Write(lightBuffer);

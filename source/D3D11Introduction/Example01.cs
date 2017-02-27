@@ -59,10 +59,10 @@ namespace D3D11Introduction
             {
                 base.RunPhase1();
 
-                mVertexShaderResult = ShaderBytecode.CompileFromFile("example01.fx", "VS", "vs_4_0");
+                mVertexShaderResult = ShaderBytecode.CompileFromFile("shaders\\example01.fx", "VS", "vs_4_0");
                 mVertexShader = new VertexShader(mDevice, mVertexShaderResult);
 
-                mPixelShaderResult = ShaderBytecode.CompileFromFile("example01.fx", "PS", "ps_4_0");
+                mPixelShaderResult = ShaderBytecode.CompileFromFile("shaders\\example01.fx", "PS", "ps_4_0");
                 mPixelShader = new PixelShader(mDevice, mPixelShaderResult);
 
                 mSignature = ShaderSignature.GetInputSignature(mVertexShaderResult);

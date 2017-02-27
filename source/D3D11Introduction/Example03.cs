@@ -1,9 +1,10 @@
-﻿using System;
-
+﻿
 using D3D11Introduction.utils;
+
 using SharpDX.Direct3D11;
 using SharpDX.DXGI;
 using SharpDX;
+
 using System.Diagnostics;
 
 namespace D3D11Introduction
@@ -29,8 +30,8 @@ namespace D3D11Introduction
             mCube = new CubeNormals(mDevice);
             mShader = new Shader();
 
-            mVSData = System.IO.File.ReadAllText("example03.vs");
-            mPSData = System.IO.File.ReadAllText("example03.ps");
+            mVSData = System.IO.File.ReadAllText("shaders\\example03.vs");
+            mPSData = System.IO.File.ReadAllText("shaders\\example03.ps");
 
             mClock = new Stopwatch();
             mClock.Start();

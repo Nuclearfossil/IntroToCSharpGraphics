@@ -9,7 +9,7 @@ struct PS_IN
 {
     float4 pos : SV_POSITION;
     float4 col : COLOR;
-    float3 norm : NORMAL;
+    float4 norm : NORMAL;
 };
 
 float4x4 worldViewProj;

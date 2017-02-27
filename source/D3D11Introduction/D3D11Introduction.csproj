@@ -46,6 +46,9 @@
       <HintPath>..\packages\SharpDX.Desktop.3.1.1\lib\net45\SharpDX.Desktop.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="SharpDX.Direct2D1, Version=3.1.1.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL">
+      <HintPath>..\packages\SharpDX.Direct2D1.3.1.1\lib\net45\SharpDX.Direct2D1.dll</HintPath>
+    </Reference>
     <Reference Include="SharpDX.Direct3D11, Version=3.1.1.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL">
       <HintPath>..\packages\SharpDX.Direct3D11.3.1.1\lib\net45\SharpDX.Direct3D11.dll</HintPath>
       <Private>True</Private>
@@ -74,12 +77,16 @@
     <Compile Include="Example01.cs" />
     <Compile Include="Example02.cs" />
     <Compile Include="Example03.cs" />
+    <Compile Include="Example04.cs" />
     <Compile Include="ExampleBase.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="utils\CubeTexturedNormals.cs" />
     <Compile Include="utils\CubeNormals.cs" />
     <Compile Include="utils\Cube.cs" />
+    <Compile Include="utils\ShaderMatrixCB.cs" />
     <Compile Include="utils\Shader.cs" />
+    <Compile Include="utils\Texture.cs" />
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
@@ -104,16 +111,26 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="example03.vs">
+    <Content Include="textures\crate01.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <None Include="shaders\example04.ps">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="example03.ps">
+    <None Include="shaders\example04.vs">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <Content Include="example01.fx">
+    <None Include="shaders\example03.vs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="shaders\example03.ps">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <Content Include="shaders\example01.fx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
