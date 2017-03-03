@@ -29,6 +29,26 @@ namespace D3D11Introduction
             base.Initialize();
 
             mShader = new ShaderMatrixCB();
+            mTexture = new utils.Texture();
+            mTexture.Initialize(mDevice, @"textures/crate01.jpg");
+
+            // Create a texture sampler state description.
+            SamplerStateDescription samplerDesc = new SamplerStateDescription()
+            {
+                Filter = Filter.MinMagMipLinear,
+                AddressU = TextureAddressMode.Wrap,
+                AddressV = TextureAddressMode.Wrap,
+                AddressW = TextureAddressMode.Wrap,
+                MipLodBias = 0,
+                MaximumAnisotropy = 1,
+                ComparisonFunction = Comparison.Always,
+                BorderColor = new Color4(0, 0, 0, 0),  // Black Border.
+                MinimumLod = 0,
+                MaximumLod = float.MaxValue
+            };
+
+            // Create the texture sampler state.
+            mSampler = new SamplerState(mDevice, samplerDesc);
         }
 
         protected override void RunPhase1()
@@ -89,7 +109,7 @@ namespace D3D11Introduction
             Matrix worldViewProj = world * viewProj;
             worldViewProj.Transpose();
 
-            mShader.SetShaderParam(mDevice, worldViewProj, new Vector3(0.0f, 0.5f, 0.5f), new Vector4(1.0f, 0.0f, 0.0f, 1.0f), new Vector4(0.0f, 1.0f, 0.0f, 1.0f), ref world, ref viewProj);
+            mShader.SetShaderParam(mDevice, worldViewProj, new Vector3(0.0f, 0.5f, 0.5f), mTexture.TextureResource, new Vector4(1.0f, 0.0f, 0.0f, 1.0f), new Vector4(0.0f, 1.0f, 0.0f, 1.0f), ref world, ref viewProj);
             mShader.Apply(mDevice);
 
             mCube.Draw(mDevice);

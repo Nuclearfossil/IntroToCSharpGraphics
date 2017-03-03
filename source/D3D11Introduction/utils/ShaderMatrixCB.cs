@@ -31,6 +31,8 @@ namespace D3D11Introduction.utils
         #region private members
         private CompilationResult mVertexShaderResult;
         private CompilationResult mPixelShaderResult;
+        private DataStream mMappedResourceMatrix;
+        private DataStream mMappedResourceLight;
         #endregion
 
         [StructLayout(LayoutKind.Sequential)]
@@ -133,7 +135,7 @@ namespace D3D11Introduction.utils
                     (VertexShaderSignature != null);
         }
 
-        public void SetShaderParam(D3DDevice device, Matrix wvp, Vector3 lightDirection, Vector4 ambientColor, Vector4 diffuseColour, ref Matrix world, ref Matrix viewproj)
+        public void SetShaderParam(D3DDevice device, Matrix wvp, Vector3 lightDirection, ShaderResourceView texture, Vector4 ambientColor, Vector4 diffuseColour, ref Matrix world, ref Matrix viewproj)
         {
             LightBuffer lightBuffer = new LightBuffer()
             {
@@ -152,17 +154,19 @@ namespace D3D11Introduction.utils
             device.ImmediateContext.UpdateSubresource(ref wvp, mWVPConstantBuffer);
             device.ImmediateContext.VertexShader.SetConstantBuffer(0, mWVPConstantBuffer);
 
-            device.ImmediateContext.MapSubresource(mMatrixConstantBuffer, MapMode.WriteDiscard, MapFlags.None, out DataStream mappedResourceMatrix);
-            mappedResourceMatrix.Write(matrixBuffer);
+            device.ImmediateContext.MapSubresource(mMatrixConstantBuffer, MapMode.WriteDiscard, MapFlags.None, out mMappedResourceMatrix);
+            mMappedResourceMatrix.Write(matrixBuffer);
             device.ImmediateContext.UnmapSubresource(mMatrixConstantBuffer, 0);
 
             device.ImmediateContext.VertexShader.SetConstantBuffer(1, mMatrixConstantBuffer);
 
-            device.ImmediateContext.MapSubresource(mLightConstantBuffer, MapMode.WriteDiscard, MapFlags.None, out DataStream mappedResourceLight);
-            mappedResourceLight.Write(lightBuffer);
+            device.ImmediateContext.MapSubresource(mLightConstantBuffer, MapMode.WriteDiscard, MapFlags.None, out mMappedResourceLight);
+            mMappedResourceLight.Write(lightBuffer);
             device.ImmediateContext.UnmapSubresource(mLightConstantBuffer, 0);
 
             device.ImmediateContext.PixelShader.SetConstantBuffer(0, mLightConstantBuffer);
+
+            device.ImmediateContext.PixelShader.SetShaderResource(0, texture);
         }
 
         public bool Apply(D3DDevice device)
