@@ -135,7 +135,7 @@ namespace D3D11Introduction.utils
                     (VertexShaderSignature != null);
         }
 
-        public void SetShaderParam(D3DDevice device, Matrix wvp, Vector3 lightDirection, ShaderResourceView texture, Vector4 ambientColor, Vector4 diffuseColour, ref Matrix world, ref Matrix viewproj)
+        public void SetShaderParam(D3DDevice device, Vector3 lightDirection, ShaderResourceView texture, Vector4 ambientColor, Vector4 diffuseColour, ref Matrix world, ref Matrix viewproj)
         {
             LightBuffer lightBuffer = new LightBuffer()
             {
@@ -150,9 +150,6 @@ namespace D3D11Introduction.utils
                 world = world,
                 viewproj = viewproj
             };
-
-            device.ImmediateContext.UpdateSubresource(ref wvp, mWVPConstantBuffer);
-            device.ImmediateContext.VertexShader.SetConstantBuffer(0, mWVPConstantBuffer);
 
             device.ImmediateContext.MapSubresource(mMatrixConstantBuffer, MapMode.WriteDiscard, MapFlags.None, out mMappedResourceMatrix);
             mMappedResourceMatrix.Write(matrixBuffer);

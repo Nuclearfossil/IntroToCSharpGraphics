@@ -109,7 +109,7 @@ namespace D3D11Introduction
             Matrix worldViewProj = world * viewProj;
             worldViewProj.Transpose();
 
-            mShader.SetShaderParam(mDevice, worldViewProj, new Vector3(0.0f, 0.5f, 0.5f), mTexture.TextureResource, new Vector4(1.0f, 0.0f, 0.0f, 1.0f), new Vector4(0.0f, 1.0f, 0.0f, 1.0f), ref world, ref viewProj);
+            mShader.SetShaderParam(mDevice, new Vector3(0.0f, 5.0f, 5.0f), mTexture.TextureResource, new Vector4(1.0f, 1.0f, 1.0f, 1.0f), new Vector4(0.1f, 0.1f, 0.1f, 1.0f), ref world, ref viewProj);
             mShader.Apply(mDevice);
 
             mCube.Draw(mDevice);

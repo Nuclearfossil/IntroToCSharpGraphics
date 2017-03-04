@@ -1,4 +1,7 @@
-﻿struct PS_IN
+﻿Texture2D shaderTexture;
+SamplerState SampleType;
+
+struct PS_IN
 {
     float4 pos  : SV_POSITION;
     float4 norm : NORMAL;
@@ -16,11 +19,13 @@ cbuffer LightBuffer
 
 float4 PS( PS_IN input ) : SV_Target
 {
+    // color *= shaderTexture.Sample(SampleType, input.uv);
+
     float4 color;
     float3 lightDir;
     float lightIntensity;
     
-    
+    color = input.col;
     color = ambientColor;
     lightDir = -lightDirection;
     lightIntensity = saturate(dot(input.norm, lightDir));
@@ -31,6 +36,7 @@ float4 PS( PS_IN input ) : SV_Target
     }
     
     color = saturate(color);
+    color *= shaderTexture.Sample(SampleType, input.uv);
     
     return color;
 }
