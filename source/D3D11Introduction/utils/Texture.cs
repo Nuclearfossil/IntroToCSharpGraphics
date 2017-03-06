@@ -36,6 +36,7 @@ namespace D3D11Introduction.utils
             }
             catch (Exception ex)
             {
+                Console.WriteLine(ex.Message);
                 return false;
             }
         }
