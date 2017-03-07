@@ -70,43 +70,46 @@ namespace D3D11Introduction.utils
 
                         // Grab verts, colors, normals and UVs
                         // For now, assume that the color channel isn't populated
-                        renderMeshData[index].position.X = mesh.Vertices[face.Indices[0]].X;
-                        renderMeshData[index].position.Y = mesh.Vertices[face.Indices[0]].Y;
-                        renderMeshData[index].position.Z = mesh.Vertices[face.Indices[0]].Z;
+                        int currentIndex = face.Indices[0];
+                        renderMeshData[index].position.X = mesh.Vertices[currentIndex].X;
+                        renderMeshData[index].position.Y = mesh.Vertices[currentIndex].Y;
+                        renderMeshData[index].position.Z = mesh.Vertices[currentIndex].Z;
                         renderMeshData[index].position.W = 1.0f;
-                        renderMeshData[index].normal.X = mesh.Normals[face.Indices[0]].X;
-                        renderMeshData[index].normal.Y = mesh.Normals[face.Indices[0]].Y;
-                        renderMeshData[index].normal.Z = mesh.Normals[face.Indices[0]].Z;
+                        renderMeshData[index].normal.X = mesh.Normals[currentIndex].X;
+                        renderMeshData[index].normal.Y = mesh.Normals[currentIndex].Y;
+                        renderMeshData[index].normal.Z = mesh.Normals[currentIndex].Z;
                         renderMeshData[index].normal.W = 1.0f;
                         renderMeshData[index].color = new SharpDX.Vector4(1.0f);  // Not supporting Vertex Color channels
-                        renderMeshData[index].UV.X = mesh.TextureCoordinateChannels[0][face.Indices[0]].X;
-                        renderMeshData[index].UV.Y = mesh.TextureCoordinateChannels[0][face.Indices[0]].Y;
+                        renderMeshData[index].UV.X = mesh.TextureCoordinateChannels[0][currentIndex].X;
+                        renderMeshData[index].UV.Y = 1.0f - mesh.TextureCoordinateChannels[0][currentIndex].Y;
                         index++;
 
-                        renderMeshData[index].position.X = mesh.Vertices[face.Indices[1]].X;
-                        renderMeshData[index].position.Y = mesh.Vertices[face.Indices[1]].Y;
-                        renderMeshData[index].position.Z = mesh.Vertices[face.Indices[1]].Z;
+                        currentIndex = face.Indices[1];
+                        renderMeshData[index].position.X = mesh.Vertices[currentIndex].X;
+                        renderMeshData[index].position.Y = mesh.Vertices[currentIndex].Y;
+                        renderMeshData[index].position.Z = mesh.Vertices[currentIndex].Z;
                         renderMeshData[index].position.W = 1.0f;
-                        renderMeshData[index].normal.X = mesh.Normals[face.Indices[1]].X;
-                        renderMeshData[index].normal.Y = mesh.Normals[face.Indices[1]].Y;
-                        renderMeshData[index].normal.Z = mesh.Normals[face.Indices[1]].Z;
+                        renderMeshData[index].normal.X = mesh.Normals[currentIndex].X;
+                        renderMeshData[index].normal.Y = mesh.Normals[currentIndex].Y;
+                        renderMeshData[index].normal.Z = mesh.Normals[currentIndex].Z;
                         renderMeshData[index].normal.W = 1.0f;
                         renderMeshData[index].color = new SharpDX.Vector4(1.0f);
-                        renderMeshData[index].UV.X = mesh.TextureCoordinateChannels[0][face.Indices[0]].X;
-                        renderMeshData[index].UV.Y = mesh.TextureCoordinateChannels[0][face.Indices[0]].Y;
+                        renderMeshData[index].UV.X = mesh.TextureCoordinateChannels[0][currentIndex].X;
+                        renderMeshData[index].UV.Y = 1.0f - mesh.TextureCoordinateChannels[0][currentIndex].Y;
                         index++;
 
-                        renderMeshData[index].position.X = mesh.Vertices[face.Indices[2]].X;
-                        renderMeshData[index].position.Y = mesh.Vertices[face.Indices[2]].Y;
-                        renderMeshData[index].position.Z = mesh.Vertices[face.Indices[2]].Z;
+                        currentIndex = face.Indices[2];
+                        renderMeshData[index].position.X = mesh.Vertices[currentIndex].X;
+                        renderMeshData[index].position.Y = mesh.Vertices[currentIndex].Y;
+                        renderMeshData[index].position.Z = mesh.Vertices[currentIndex].Z;
                         renderMeshData[index].position.W = 1.0f;
-                        renderMeshData[index].normal.X = mesh.Normals[face.Indices[2]].X;
-                        renderMeshData[index].normal.Y = mesh.Normals[face.Indices[2]].Y;
-                        renderMeshData[index].normal.Z = mesh.Normals[face.Indices[2]].Z;
+                        renderMeshData[index].normal.X = mesh.Normals[currentIndex].X;
+                        renderMeshData[index].normal.Y = mesh.Normals[currentIndex].Y;
+                        renderMeshData[index].normal.Z = mesh.Normals[currentIndex].Z;
                         renderMeshData[index].normal.W = 1.0f;
                         renderMeshData[index].color = new SharpDX.Vector4(1.0f);
-                        renderMeshData[index].UV.X = mesh.TextureCoordinateChannels[0][face.Indices[0]].X;
-                        renderMeshData[index].UV.Y = mesh.TextureCoordinateChannels[0][face.Indices[0]].Y;
+                        renderMeshData[index].UV.X = mesh.TextureCoordinateChannels[0][currentIndex].X;
+                        renderMeshData[index].UV.Y = 1.0f - mesh.TextureCoordinateChannels[0][currentIndex].Y;
                         index++;
                     }
                     result.AddMesh(mDevice, renderMeshData, primitiveCount);

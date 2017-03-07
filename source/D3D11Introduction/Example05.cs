@@ -65,8 +65,8 @@ namespace D3D11Introduction
 
             mSampler = new SamplerState(mDevice, desc);
 
-            string vsData = System.IO.File.ReadAllText("shaders\\example04.vs");
-            string psData = System.IO.File.ReadAllText("shaders\\example04.ps");
+            string vsData = System.IO.File.ReadAllText("shaders\\example05.vs");
+            string psData = System.IO.File.ReadAllText("shaders\\example05.ps");
 
             mShader.Load(mDevice, vsData, psData);
             mShader.Compile(mDevice);
@@ -86,9 +86,9 @@ namespace D3D11Introduction
             mClock = new Stopwatch();
             mClock.Start();
         }
+
         protected override void CustomRender()
         {
-            Matrix world = Matrix.Translation(new Vector3(-5.0f, -5.0f, -5.0f));
             Matrix viewProj = Matrix.Multiply(mView, mProj);
 
             mDeviceContext.ClearDepthStencilView(mDepthView, DepthStencilClearFlags.Depth, 1.0f, 0);
@@ -98,11 +98,13 @@ namespace D3D11Introduction
 
             // float currentTime = 0.1f;
             float currentTime = mClock.ElapsedMilliseconds / 1000.0f;
-            world = Matrix.RotationX(currentTime) * Matrix.RotationY(currentTime * 2.0f) * Matrix.RotationZ(currentTime * 0.7f);
+            Matrix world = Matrix.RotationX(currentTime) * Matrix.RotationY(currentTime * 2.0f) * Matrix.RotationZ(currentTime * 0.7f);
+            world *= Matrix.Translation(new Vector3(0.0f, 0.0f, 10.0f));
+            //Matrix world = Matrix.Translation(new Vector3(0.0f, 0.0f, 10.0f));
             Matrix worldViewProj = world * viewProj;
             worldViewProj.Transpose();
 
-            mShader.SetShaderParam(mDevice, new Vector3(0.0f, 5.0f, 5.0f), mMesh.Material.DiffuseMap.TextureResource, mMesh.Material.Ambient, mMesh.Material.Diffuse, ref world, ref viewProj);
+            mShader.SetShaderParam(mDevice, new Vector3(5.0f, 5.0f, 5.0f), mMesh.Material.DiffuseMap.TextureResource, mMesh.Material.Ambient, mMesh.Material.Diffuse, ref world, ref viewProj);
             mShader.Apply(mDevice);
 
             mMesh.Draw(mDevice);
