@@ -11,7 +11,7 @@ namespace D3D11Introduction
         private utils.RenderMesh mMesh = new utils.RenderMesh();
 
         #region
-        protected ShaderMatrixCB mShader = null;
+        protected ShaderMatrixCBv2 mShader = null;
         protected InputLayout mLayout = null;
         protected SamplerState mSampler = null;
         protected Stopwatch mClock = null;
@@ -22,7 +22,7 @@ namespace D3D11Introduction
         {
             base.Initialize();
 
-            mShader = new ShaderMatrixCB();
+            mShader = new ShaderMatrixCBv2();
 
             // Create a texture sampler state description.
             SamplerStateDescription samplerDesc = new SamplerStateDescription()
@@ -104,7 +104,7 @@ namespace D3D11Introduction
             Matrix worldViewProj = world * viewProj;
             worldViewProj.Transpose();
 
-            mShader.SetShaderParam(mDevice, new Vector3(5.0f, 5.0f, 5.0f), mMesh.Material.DiffuseMap.TextureResource, mMesh.Material.Ambient, mMesh.Material.Diffuse, ref world, ref viewProj);
+            mShader.SetShaderParam(mDevice, new Vector3(5.0f, 5.0f, 5.0f), mMesh.Material.DiffuseMap.TextureResource, mMesh.Material.Ambient, mMesh.Material.Diffuse, ref world, ref mView, ref mProj);
             mShader.Apply(mDevice);
 
             mMesh.Draw(mDevice);

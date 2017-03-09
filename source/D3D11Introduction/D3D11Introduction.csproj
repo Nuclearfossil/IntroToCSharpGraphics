@@ -24,7 +24,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <UseVSHostingProcess>true</UseVSHostingProcess>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -93,6 +93,7 @@
     <Compile Include="utils\RenderMaterial.cs" />
     <Compile Include="utils\RenderMesh.cs" />
     <Compile Include="utils\MeshManager.cs" />
+    <Compile Include="utils\ShaderMatrixCBv2.cs" />
     <Compile Include="utils\ShaderMatrixCB.cs" />
     <Compile Include="utils\Shader.cs" />
     <Compile Include="utils\Texture.cs" />

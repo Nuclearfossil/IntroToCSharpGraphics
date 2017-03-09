@@ -24,17 +24,20 @@ float4 PS( PS_IN input ) : SV_Target
     float3 lightDir;
     float lightIntensity;
     
-    color = input.col;
+    color = shaderTexture.Sample(SampleType, input.uv);
     lightDir = -normalize(lightDirection);
     lightIntensity = saturate(dot(input.norm, lightDir));
     
     if (lightIntensity > 0.0f)
     {
-        color += (diffuseColor * lightIntensity);
+        color *= (diffuseColor * lightIntensity);
+    }
+    else
+    {
+        color *= ambientColor;
     }
     
     color = saturate(color);
-    color *= shaderTexture.Sample(SampleType, input.uv);
     
     return color;
 }
