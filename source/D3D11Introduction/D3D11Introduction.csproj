@@ -83,6 +83,7 @@
     <Compile Include="Example02.cs" />
     <Compile Include="Example03.cs" />
     <Compile Include="Example04.cs" />
+    <Compile Include="Example06.cs" />
     <Compile Include="Example05.cs" />
     <Compile Include="ExampleBase.cs" />
     <Compile Include="Program.cs" />
@@ -109,6 +110,9 @@
     <None Include="meshes\crate01.fbx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="meshes\teapot.fbx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -127,6 +131,12 @@
     <Content Include="textures\crate01.jpg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <None Include="shaders\example06.ps">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="shaders\example06.vs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="shaders\example05.ps">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

@@ -154,7 +154,7 @@ namespace D3D11Introduction
                                                     0.0f, 1.0f));
             mDeviceContext.OutputMerger.SetTargets(mDepthView, mRenderView);
 
-            mProj = Matrix.PerspectiveFovLH((float)Math.PI / 4.0f, (float)mRenderForm.ClientSize.Width / (float)mRenderForm.ClientSize.Height, 0.1f, 100.0f);
+            mProj = Matrix.PerspectiveFovLH((float)Math.PI / 4.0f, (float)mRenderForm.ClientSize.Width / (float)mRenderForm.ClientSize.Height, 0.1f, 1000.0f);
 
             mHasUserResized = false;
         }
