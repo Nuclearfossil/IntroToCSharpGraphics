@@ -29,6 +29,8 @@ namespace D3D11Introduction
         protected bool mHasUserResized = true;
         #endregion
 
+        public int ScreenWidth { get; private set; }
+        public int ScreenHeight { get; private set; }
 
         public ExampleBase()
         {
@@ -37,6 +39,9 @@ namespace D3D11Introduction
 
         public virtual void Initialize()
         {
+            ScreenHeight = mRenderForm.ClientSize.Height;
+            ScreenWidth = mRenderForm.ClientSize.Width;
+
             mSwapChainDescription = new SwapChainDescription()
             {
                 BufferCount = 1,
@@ -70,6 +75,10 @@ namespace D3D11Introduction
             mProj = Matrix.Identity;
         }
 
+        public virtual void Update()
+        {
+        }
+
         public virtual void Run()
         {
             RunPhase1();
@@ -87,6 +96,8 @@ namespace D3D11Introduction
                 {
                     Resize();
                 }
+
+                Update();
 
                 CustomRender();
 

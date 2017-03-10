@@ -15,6 +15,7 @@ namespace D3D11Introduction
         protected InputLayout mLayout = null;
         protected SamplerState mSampler = null;
         protected Stopwatch mClock = null;
+        protected CameraBase mCamera = null;
         #endregion
 
 
@@ -83,8 +84,16 @@ namespace D3D11Introduction
 
             mMesh = utils.MeshManager.LoadMesh(@"meshes/teapot.fbx");
 
+            mCamera = new CameraBase(ScreenWidth, ScreenHeight);
             mClock = new Stopwatch();
             mClock.Start();
+        }
+
+        public override void Update()
+        {
+            base.Update();
+
+            mCamera.Update();
         }
 
         protected override void CustomRender()
