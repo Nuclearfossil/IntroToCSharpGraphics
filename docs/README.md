@@ -1076,11 +1076,11 @@ Well, not really, 'textures', but texture UV coordinates. Simply put, UV coordin
 
 For example:
 
-![UV Coordinates](docresources/uv_coordinates.png)
+![UV coordinates]({{site.baseurl}}/docs/uv_coordinates.png)
 
 For our needs, we are only using 2D coordinates (yes, you can have 3D textures). Applying a triangle onto the texture can be visualized like so:
 
-![Triangle mapped to UV](docresources/triangle_uv_coordinates.png)
+![Triangle mapped to UV]({{site.baseurl}}/docs/triangle_uv_coordinates.png)
 
 Points a, b and c would have coresponding UV values mappeed against the texture. Nothing crazy there. I've coded them by hand (you're welcome) but you'd want to use a proper 3D DCC package to do it right. There are also various projections you could use to automatically generate the UV coordinates onto regular shapes, but that's beyond the scope of this article.
 
@@ -1193,49 +1193,49 @@ Well, you don't debug them. In C#. You debug them in the graphics debugger. And 
 
 If you're in dev studio and start up the 'Graphics Debugger', you're in for some win! 
 
-![Graphics Debugging](docresources/graphic_debugging_01.png)
+![Graphics Debugging]({{site.baseurl}}/docs/graphic_debugging_01.png)
 
 And that starts up the graphics debugger! (BTW - totally available in the community edition of VS!)
 
-![Graphics Debugging](docresources/graphic_debugging_02.png)
+![graphic_debugging_02.png]({{site.baseurl}}/docs/graphic_debugging_02.png)
 
 Grabbing a sample of what's going on? Press the 'Capture Frame' button:
 
-![Graphics Debugging](docresources/graphic_debugging_03.png)
+![graphic_debugging_03.png]({{site.baseurl}}/docs/graphic_debugging_03.png)
 
 Once you've snagged some frames, you can now start debugging what's going on. There's a lot in here, and I won't cover it all here. But I'll hit the highlights.
 
 Let's inspect a captured frame:
 
-![Graphics Debugging](docresources/graphic_debugging_04.png)
+![graphic_debugging_04.png]({{site.baseurl}}/docs/graphic_debugging_04.png)
 
 That opens up a whole other debugger!
 
-![Graphics Debugging](docresources/graphic_debugging_05.png)
+![graphic_debugging_05.png]({{site.baseurl}}/docs/graphic_debugging_05.png)
 
 In the 'Event List' window, you can see all the D3D calls that have been invoked.  Expand the 'Draw' item in it:
 
-![Graphics Debugging](docresources/graphic_debugging_06.png)
+![graphic_debugging_06.png]({{site.baseurl}}/docs/graphic_debugging_06.png)
 
 and then click on, say, the Input Layout item:
 
-![Graphics Debugging](docresources/graphic_debugging_07.png)
+![graphic_debugging_07.png]({{site.baseurl}}/docs/graphic_debugging_07.png)
 
 The arrows pointing to the two buttons? Those are the vertex and pixel shader debuggers. When you click on them, they simulate what happens in the appropriate shader. Go ahead and click on the vertex shader 'play' button.
 
-![Graphics Debugging](docresources/graphic_debugging_08.png)
+![graphic_debugging_08.png]({{site.baseurl}}/docs/graphic_debugging_08.png)
 
 That is an honest to god debugger for your vertex and pixel shader. You can set breakpoints, inspect variables. You can't change values to see what happens, but it is a great way to figure out what's where and what values are being processed.
 
-![Graphics Debugging](docresources/graphic_debugging_09.png)
+![graphic_debugging_09.png]({{site.baseurl}}/docs/graphic_debugging_09.png)
 
 You can also inspect and see what are in constant buffers
 
-![Graphics Debugging](docresources/graphic_debugging_10.png)
+![graphic_debugging_10.png]({{site.baseurl}}/docs/graphic_debugging_10.png)
 
-![Graphics Debugging](docresources/graphic_debugging_11.png)
+![graphic_debugging_11.png]({{site.baseurl}}/docs/graphic_debugging_11.png)
 
-![Graphics Debugging](docresources/graphic_debugging_12.png)
+![graphic_debugging_12.png]({{site.baseurl}}/docs/graphic_debugging_12.png)
 
 So, as you can see, we've actually got some decent debugging tools with D3D and Visual Studio, out of the box. We'll explore these tools more as we progress along our merry little way.
 
