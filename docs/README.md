@@ -359,7 +359,6 @@ In the next section we need to talk about the transformation pipeline. We've alr
 
 ![TransformPipeline]({{site.baseurl}}/docs/Example06_01.png)
 
-
 Looking at the image, we have been dealing with Normalized Device Coordinates > Viewport Transform > Windows Coordinates.
 
 We're dealing with a 3D object (a set of triangles) that needs to be projected onto a 2D surface (the monitor). We do that (and a few other things) through the use of a projection matrix. 
@@ -417,7 +416,7 @@ In the previous section, we discussed the legacy OpenGL programming model (more 
 
 In the Introduction project, a lot of things were put together hapdash. I've corrected that in the `ShaderIntroduction` project:
 
-![Initial Class layout](docresources/InitialClassLayout.png)
+![Initial Class Layout]({{site.baseurl}}/docs/InitialClassLayout.png)
 
 A fair bit has changed with this codebase. I've been a bit more regimented in how these classes were defined. They're also a bit more generalized and properly reusable. Some things to note:
 
