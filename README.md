@@ -23,3 +23,6 @@ simplified content, rather than going the route of some Blog posts. We'll see ho
 
 ~ How to work with shaders.
 
+## source/D3D11Introduction
+
+~ SharpDX, DirectX 11 and various other pieces for an introduction to writing code in DX 11.
