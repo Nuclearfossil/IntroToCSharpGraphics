@@ -560,6 +560,35 @@ You can also inspect and see what are in constant buffers
 
 So, as you can see, we've actually got some decent debugging tools with D3D and Visual Studio, out of the box. We'll explore these tools more as we progress along our merry little way.
 
+## A couple of notes
+The shaders that we use here are fairly lightweight.  They're also unoptimized.
+
+I don't mean, I haven't witten them optimally (I haven't, but that's because I'm being purposely verbose). I've disabled compiliation optimizations on the shaders so that the above debugger has better data for being able to debug them.
+
+I've done this in the shader compiler:
+
+```
+public bool Load(D3DDevice device, string vsData, string psData)
+{
+    if (device == null || vsData == string.Empty || psData == string.Empty)
+    {
+        return false;
+    }
+
+    mVertexShaderResult = ShaderBytecode.Compile(vsData, "VS", VertexShaderVersion, ShaderFlags.Debug | ShaderFlags.SkipOptimization);
+    mPixelShaderResult = ShaderBytecode.Compile(psData, "PS", PixelShaderVersion, ShaderFlags.Debug | ShaderFlags.SkipOptimization);
+
+    return (mVertexShaderResult.ResultCode == Result.Ok) &&
+            (mPixelShaderResult.ResultCode == Result.Ok);
+}
+```
+
+Specifically, using the following flags:
+
+`ShaderFlags.Debug | ShaderFlags.SkipOptimization`
+
+In production code, you'll want to remove them or replace them with something more appropriate.
+
 # And a camera to round out this mess
 In `Example06` I finally introduce a camera class into the mix. It encapsulated the View and Projection matrices, exposes accessors for them and updates the camera based on input.
 
