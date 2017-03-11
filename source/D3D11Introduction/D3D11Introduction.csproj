@@ -139,6 +139,7 @@
     <Content Include="textures\crate01.jpg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <None Include="README.md" />
     <None Include="shaders\example06.ps">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

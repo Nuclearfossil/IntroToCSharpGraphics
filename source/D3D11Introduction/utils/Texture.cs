@@ -18,7 +18,7 @@ namespace D3D11Introduction.utils
         {
             try
             {
-                using (var texture = LoadFromFile(device, new SharpDX.WIC.ImagingFactory(), filename))
+                using (Texture2D texture = LoadFromFile(device, new SharpDX.WIC.ImagingFactory(), filename))
                 {
                     ShaderResourceViewDescription desc = new ShaderResourceViewDescription()
                     {

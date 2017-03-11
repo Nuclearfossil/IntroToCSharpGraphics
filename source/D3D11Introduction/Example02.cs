@@ -28,7 +28,7 @@ namespace D3D11Introduction
             mCube = new Cube(mDevice);
             mShader = new Shader();
 
-            mShaderData = System.IO.File.ReadAllText("example01.fx");
+            mShaderData = System.IO.File.ReadAllText(@"shaders\example01.fx");
 
             mClock = new Stopwatch();
             mClock.Start();

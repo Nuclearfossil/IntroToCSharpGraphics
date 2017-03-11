@@ -46,7 +46,7 @@ namespace D3D11Introduction
                 MinimumLod = 0,
                 MaximumLod = float.MaxValue
             };
-
+            
             // Create the texture sampler state.
             mSampler = new SamplerState(mDevice, samplerDesc);
         }
@@ -54,22 +54,6 @@ namespace D3D11Introduction
         protected override void RunPhase1()
         {
             base.RunPhase1();
-
-            SamplerStateDescription desc = new SamplerStateDescription()
-            {
-                Filter = Filter.MinMagMipLinear,
-                AddressU = TextureAddressMode.Wrap,
-                AddressV = TextureAddressMode.Wrap,
-                AddressW = TextureAddressMode.Wrap,
-                MipLodBias = 0,
-                MaximumAnisotropy = 1,
-                ComparisonFunction = Comparison.Always,
-                BorderColor = new Color4(0, 0, 0, 0),
-                MinimumLod = 0,
-                MaximumLod = float.MaxValue
-            };
-
-            mSampler = new SamplerState(mDevice, desc);
 
             string vsData = System.IO.File.ReadAllText("shaders\\example04.vs");
             string psData = System.IO.File.ReadAllText("shaders\\example04.ps");

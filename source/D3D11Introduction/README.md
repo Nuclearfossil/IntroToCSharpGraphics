@@ -200,6 +200,10 @@ mConstantBuffer = new D3DBuffer(
                     0);
 ```
 
+The size of the constant buffer, in this example, is defined by the size of a Matrix class - which is the Model-View-projection matrix.
+
+Also note, that in D3D, it's more common to refer to it as a World-View-Projection matrix, rather than Model-View-Projection. For the rest of this document we will use that notation.
+
 ## Preppring for Rendering
 
 Time to set up the Device context for rendering:
@@ -209,6 +213,7 @@ Time to set up the Device context for rendering:
 - Set the Vertex buffer binding (tell the VB what to draw)
 - Set the Constant buffer (the World-View-Projection Matrix) to the appropriate constant in the shader.
 - Set the Vertex and Pixel shaders
+
 
 ```
 mDeviceContext.InputAssembler.InputLayout = mLayout;
@@ -275,7 +280,8 @@ PS_IN VS( VS_IN input )
 	output.col = input.col;
 	
 	return output;
-}```
+} 
+```
 
 Breaking it down line by line, we're seeing the function signature for the Vertex shader defined as:
 
@@ -299,7 +305,270 @@ To summarize, the vertex shader does nothing more than transform the vertex (and
 
 HLSL shader sematics can be found [here](https://goo.gl/3N8AnL).
 
+# Building a better library
+## The Shader Class
+We want to simplify out coding process by creating several new classes that will allow us to more rapidly create applications. We'll start out by building out a shader class to work with.
 
+We've created a new file, `Example02.cs`. We still load the same shader file (shaders\example01.fx) but that is now loaded into a `Shader` class: `mShader`.
+
+`Shader` is and IDisposable, so make sure you dispose of it correctly when you use it.  There's a buch of things in there that we aren't going to be talking about just yet, but patience, we will get to them!
+
+We have multiple `Load` methods. One expecting an 'fx' file, and one that separates out the Pixel and Vertex shaders. I prefer to use separate files for shaders, but that is totally optional. So going forward with other programs, I'll be using separate files.
+
+The process for using a Shader class is this - create the textual version of the shader (either as a hard-coded string or, as in this method, load the program off disk), compile the shader, set the parameters on the shader, and then call `Apply` on the shader.
+
+## The Cube class
+I think we're all tired of seeing the same code copied and pasted for the sample cube we use, so I've generated a `Cube` class that encapsulates all this. Yes, it's just a copy/paste of the code that handles all the relevant data and functionality of preparing a cube for rendering. But it will also be the inspiration for other classes later on.
+
+# Extending the Cube class
+I expect that everyone is familiar with normals. Let's extend the cube class to contain normals in it's data. Looking at the class `CubeNormals`, you can now see that we have vectors that contain the additional normal data.
+
+There's no special reason why the vertex layout is in [position, normal, color] arrangement. We could easily have set up the orientation in any format we choose. We do, however, have to make sure that the *stride* of the layout is set correctly. In this case, we've added one more `Vector4` into the mix, so our stride need to be updated appropriately. I think you can see that updating the stride manually like this is a pain. Once your data format is fairly concrete, you don't have to worry as much about changing the format. However, it is highly possible that different meshes may have different data requirements (binormals, multiple UV and Color sets ...) so you may want to take that into consideration with how you calculate your vertex stride.
+
+We also keep the Input Layout of the vertex data separate from the Cube structure. I'm currently torn on that - it arguably makes more sense to bind it elsewhere; since it uses the VertexShaderSignature, perhaps it should reside in the shader itself? I may change that in a later revision of the `Shader` class.
+
+Looking at the method for setting the parameters on the shader, you now can see that we're setting a few more data points - the last three, to be more specific. In this case, we're looking at a light direction, an ambient color and a diffuse color. This example shows us how to properly set a Lighting 'Constant buffer' in D3D. Following into the `Shader` class, you can see that we have a shader that contains a struct called `LightBuffer`. It contains 2 `Vector4` elements as well as a `Vector3` element and a final `float` called `padding`.
+
+Why the `padding` element? And why the `[StructLayout(Layoutkind.Sequential)]` decorator? Hitting up the MSDN docs gives us a great hint as to why:
+link: (https://msdn.microsoft.com/en-us/library/system.runtime.interopservices.layoutkind(v=vs.110).aspx)
+
+> Controls the layout of an object when exported to unmanaged code.
+
+Aha. But no, not really. It actually it more related to the attribute `LayoutKind.Sequential`
+
+> The members of the object are laid out sequentially, in the order in which they appear when exported to unmanaged memory. The members are laid out according to the packing specified in StructLayoutAttribute.Pack, and can be noncontiguous.
+
+We don't want noncontiguous when sending data to our GPU. OK, that's all fine and dandy, but why the `padding`?
+
+Rules for packing constant buffers can be a little odd. Constant buffers are expected to align on a 16 byte boundary; the start of a variable in a constant buffer needs to be aligned on a 16 byte boundary. So we add a float into the mix to ensure that if we add another variable at the end of this struct, it comes after the padding and ensures that we're properly aligned.
+
+The other way of solving this is to be more explicit in how we define our elements in the structure:
+
+```
+[StructLayout(LayoutKind.Explicit)]
+public struct LightBuffer
+{
+    [FieldOffset(0)]
+    public Vector4 ambientColor;
+
+    [FieldOffset(16)]
+    public Vector4 diffuseColor;
+
+    [FieldOffset(32)]
+    public Vector3 lightDirection;
+} 
+```
+
+Both have their pros and cons. I'll leave it up to the reader to decide which is best for their needs.
+
+Now that we have the layout of the constant buffer, we need a `BufferDescription` for that buffer:
+
+```
+BufferDescription lightBufferDesc = new BufferDescription()
+{
+    Usage = ResourceUsage.Dynamic,
+    SizeInBytes = Utilities.SizeOf<LightBuffer>(),
+    BindFlags = BindFlags.ConstantBuffer,
+    CpuAccessFlags = CpuAccessFlags.Write,
+    OptionFlags = ResourceOptionFlags.None,
+    StructureByteStride = 0
+};
+
+mLightConstantBuffer = new D3DBuffer(device, lightBufferDesc);
+```
+
+and to put data into this buffer for the shader to use:
+
+```
+DataStream mappedResourceLight = default(DataStream);
+device.ImmediateContext.MapSubresource(mLightConstantBuffer, MapMode.WriteDiscard, MapFlags.None, out mappedResourceLight);
+mappedResourceLight.Write(lightBuffer);
+device.ImmediateContext.UnmapSubresource(mLightConstantBuffer, 0);
+
+device.ImmediateContext.PixelShader.SetConstantBuffer(0, mLightConstantBuffer);
+```
+
+# Textureing
+Rendering stuff isn't very useful if you can't texture it. This next bit covers some fairly simple aspects of loading and using textures in D3D
+
+First thing first, let's look at our new model class, `CubeTextureNormals`. From it's name, you can probably tell what it contains: positions, normals, and ... textures?
+
+Well, not really, 'textures', but texture UV coordinates. Simply put, UV coordinate sets define where, in 'texture space' a vertex would fall on a texture. Texture space is defined between 0 and 1 and starts at the top left of a texture.
+
+For example:
+
+![UV Coordinates](docresources/uv_coordinates.png)
+
+For our needs, we are only using 2D coordinates (yes, you can have 3D textures). Applying a triangle onto the texture can be visualized like so:
+
+![Triangle mapped to UV](docresources/triangle_uv_coordinates.png)
+
+Points a, b and c would have coresponding UV values mappeed against the texture. Nothing crazy there. I've coded them by hand (you're welcome) but you'd want to use a proper 3D DCC package to do it right. There are also various projections you could use to automatically generate the UV coordinates onto regular shapes, but that's beyond the scope of this article.
+
+Now that you have UV data for your content, we need to load some textures to use!  To that end, I've created a `Texture` class we can use. There's really nothing surprising here. SharpDX has access to the 'Windows Imaging Component'; a Microsoft API that gives us access to some fairly low level functionality for reading/writing image data. (link: https://msdn.microsoft.com/en-us/library/windows/desktop/ee719902.aspx). The big takeaway here is that WIC allows us to read pretty much any image data type.
+
+Note: as an exercise to the reader, there is an intentional bug here. Where is it? What does it do? How do you fix it?
+
+The takeaway from this class is that we want to provide to D3D a `ShaderResourceView` that maps a `Texture2D`. That resource is then fed into a 'Sampler' that can do many, many things to a texture. I won't go over all the grubby details of that, aside from the fact that allows for interpolation between pixels of an image, or combination of pixels in an image, depending upon how close/far from a triangle the viewer is.
+
+You create a sampler using a `SamplerStateDescription` and a `SamplerState`. The `SamplerStateDescription` is just that, a description object that says how to create the `SamplerState`. From the MSDN, the `SamplerState`:
+
+> Sampler state determines how texture data is sampled using texture addressing modes, filtering, and level of detail.  Sampling is done each time a texture pixel, or texel, is read from a texture. A texture contains an array of texels, or texture pixels. The position of each texel is denoted by (u,v), where u is the width and v is the height, and is mapped between 0 and 1 based on the texture width and height. The resulting texture coordinates are used to address a texel when sampling a texture.
+
+link: (https://msdn.microsoft.com/en-us/library/ff604998.aspx)
+
+I do want to go into much more detail on this, but Jay is looking to talk more about SamplerStates and different types of filtering. I'm going to park this topic here until he has a chance to talk about it.
+
+Just like everything else we've done, we need to let the D3D pipeline know what's going on. We enable a sampler like so:
+
+```
+ mDeviceContext.PixelShader.SetSampler(0, mSampler);
+```
+
+And we update the shader to now take a `ShaderViewResource` that maps to our texture:
+
+```
+mShader.SetShaderParam(mDevice, new Vector3(0.0f, 5.0f, 5.0f), mTexture.TextureResource, new Vector4(1.0f, 1.0f, 1.0f, 1.0f), new Vector4(0.1f, 0.1f, 0.1f, 1.0f), ref world, ref viewProj);
+```
+
+And in the shader, we take that `ShaderResourceView` and apply it to the pixel shader (the vertex shader doesn't use it at all)
+
+```
+public void SetShaderParam(D3DDevice device, Vector3 lightDirection, ShaderResourceView texture, Vector4 ambientColor, Vector4 diffuseColour, ref Matrix world, ref Matrix viewproj)
+{
+...
+   device.ImmediateContext.PixelShader.SetShaderResource(0, texture);
+}
+```
+
+## But that's not all!
+
+One other thing that we do in `Example04` is break down the transformation matrices passed into the vertex shader. Previously we've been combining all the matrices into a world-view-projection matrix. However that may not be useful in the long run. When we have multiple objects, you may want to pre-computer the view-projection matrix, but the world matrix will change from object to objet (they all won't be transformed into world space - the GPU is better at doing that).
+
+So, we have a `MatrixBuffer`, laid out very similarly to the LightBuffer!
+
+```
+[StructLayout(LayoutKind.Sequential)]
+internal struct MatrixBuffer
+{
+    public Matrix world;
+    public Matrix viewproj;
+}
+```
+
+No padding necesary here.
+
+Sending this across to the GPU is, again, fairly straightforward:
+
+```
+device.ImmediateContext.MapSubresource(mMatrixConstantBuffer, 
+                                       MapMode.WriteDiscard, 
+                                       MapFlags.None,
+                                       out mMappedResourceMatrix);
+mMappedResourceMatrix.Write(matrixBuffer);
+device.ImmediateContext.UnmapSubresource(mMatrixConstantBuffer, 0);
+
+device.ImmediateContext.VertexShader.SetConstantBuffer(1, mMatrixConstantBuffer);
+```
+
+However, we do have to have a bit of glue code on the shader side of things. The definition of that buffer in the vertex shader looks like so:
+
+```
+cbuffer MatrixBuffer : register(b1)
+{
+    matrix world;
+    matrix viewproj;
+}
+```
+
+The `register(b1)` tells the HLSL shader compiler what constant buffer register (or 'slot') to use for reading the data. In the C# side, that maps to the '1' in
+
+```
+device.ImmediateContext.VertexShader.SetConstantBuffer(1, mMatrixConstantBuffer);
+```
+
+The layout of the `register` keyword can be found here: (https://msdn.microsoft.com/en-us/library/windows/desktop/dd607359(v=vs.85).aspx)
+
+Shader model reference link: (https://msdn.microsoft.com/en-us/library/windows/desktop/bb509638(v=vs.85).aspx)
+
+# Something sort of resembling a framework (Example05.cs)
+No, it's not *really* a framework now, but it's starting to look more an more like one. Yes, it's still another spinning cube, but the cube, this time, was generated in Maya, not by hand. Thus we now have a rudimentary `RenderMesh` class that holds a renderable object.
+
+So, a `RenderableMesh` has a D3DBuffer for vertex data, only reads Triangles (no index buffer at this point), and also contains a `RenderMaterial` class instance.  For a lot of you, this is old hat, especially if you've worked in any 3D DCC, but a Material in this case defines color information that should be applied to a mesh. Typically that includes an ambient color, specular, diffuse ... textures ... it really depends on your shading model.  For this case, tho, we're going to use a fairly simple shading model; ambient color, diffuse color and a diffuse map.  In a later example, we're going to do much, much more complex shaders.
+
+However, we need to be able to load data from an intermediate file format. In this case, .fbx (although other formats are supported). Are we going to write our own import library? Hell no. There's a fantastics Open Source library out there for both C++ and C# called Open Asset Import library: (https://github.com/assimp)
+
+Yes, it's called AssImp. Shut up.
+
+What I've done is created a static class called `MeshManager` that tracks loaded meshes (so you don't re-load an existing mesh) and provides a `RenderMesh` for you. It uses the AssImp library to do all the heavy lifting. What we do with that library is access all the vertex and material data and generate the `RenderMesh` and `RenderMaterial` from it. There are a few convenience functions in there (building a proper path to the assets, including textures), as well as some data validation.
+
+But there is a lot more it can (and will) do. Loading an asset from an fbx, dae or other file format is not a quick process. It's fairly complex. Also, intermediate file formats are *large*. They don't have to be. Especially considering what we want as data. So the actual goal of this tool class will be to eventually generate a 'transform' of an intermediate data file into a highly compact and potentially streamable version of the data, in binary form.  But more on that later (much later).
+
+To that end, I've also updated the Shader as well - the constant buffer for the `LightBuffer` hasn't changed, but we've broken the `MatrixBuffer` down even further to contain the workd, view and projection matrices. This is far from optimal, but there's a reason for this madness.
+
+See, as I was building `Example05`, I was having a heck of a time getting the object transformation *just* right. So I broke the matrices down into their individual components so I could better debug them - make sure that what I was sending in was what I was expecting.
+
+"But wait!" you say, with baited breath. "It's a shader. How can you debug shaders! In C#!".
+
+Well, you don't debug them. In C#. You debug them in the graphics debugger. And in Windows 10. if you're on Windows 7, you may be SOL.
+
+If you're in dev studio and start up the 'Graphics Debugger', you're in for some win! 
+
+![Graphics Debugging](docresources/graphic_debugging_01.png)
+
+And that starts up the graphics debugger! (BTW - totally available in the community edition of VS!)
+
+![Graphics Debugging](docresources/graphic_debugging_02.png)
+
+Grabbing a sample of what's going on? Press the 'Capture Frame' button:
+
+![Graphics Debugging](docresources/graphic_debugging_03.png)
+
+Once you've snagged some frames, you can now start debugging what's going on. There's a lot in here, and I won't cover it all here. But I'll hit the highlights.
+
+Let's inspect a captured frame:
+
+![Graphics Debugging](docresources/graphic_debugging_04.png)
+
+That opens up a whole other debugger!
+
+![Graphics Debugging](docresources/graphic_debugging_05.png)
+
+In the 'Event List' window, you can see all the D3D calls that have been invoked.  Expand the 'Draw' item in it:
+
+![Graphics Debugging](docresources/graphic_debugging_06.png)
+
+and then click on, say, the Input Layout item:
+
+![Graphics Debugging](docresources/graphic_debugging_07.png)
+
+The arrows pointing to the two buttons? Those are the vertex and pixel shader debuggers. When you click on them, they simulate what happens in the appropriate shader. Go ahead and click on the vertex shader 'play' button.
+
+![Graphics Debugging](docresources/graphic_debugging_08.png)
+
+That is an honest to god debugger for your vertex and pixel shader. You can set breakpoints, inspect variables. You can't change values to see what happens, but it is a great way to figure out what's where and what values are being processed.
+
+![Graphics Debugging](docresources/graphic_debugging_09.png)
+
+You can also inspect and see what are in constant buffers
+
+![Graphics Debugging](docresources/graphic_debugging_10.png)
+
+![Graphics Debugging](docresources/graphic_debugging_11.png)
+
+![Graphics Debugging](docresources/graphic_debugging_12.png)
+
+So, as you can see, we've actually got some decent debugging tools with D3D and Visual Studio, out of the box. We'll explore these tools more as we progress along our merry little way.
+
+# And a camera to round out this mess
+In `Example06` I finally introduce a camera class into the mix. It encapsulated the View and Projection matrices, exposes accessors for them and updates the camera based on input.
+
+I'm cheating a fair bit here and using OpenTK's input library to get the caemra up and running. I will eventually move away from this and use DirectInput (or whatever D3D 11 is calling it these days).  This camera is essentially a near-verbatim copyu of the previous OpenGL camera I created, replacing all the matrix operations with the comparable D3D calls.
+
+Also note that I'm using a Left Handed co-ordinate system. Who says you need to use a Right Handed co-ordinate system!
+
+#Summary
+That's pretty much it for an intro. We'll dig further into D3D in a future lesson, exploring lighting models and different material systems.  And with that, I'm out!
 ## Additional links
 
  - [DirectX 11 Website](https://goo.gl/5kHKFz)
