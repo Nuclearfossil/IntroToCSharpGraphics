@@ -108,11 +108,15 @@ namespace D3D11Introduction
             // float currentTime = 0.1f;
             float currentTime = mClock.ElapsedMilliseconds / 1000.0f;
             Matrix world = Matrix.Translation(new Vector3(0.0f, -25.0f, 120.0f));
-            //Matrix world = Matrix.Translation(new Vector3(0.0f, 0.0f, 10.0f));
-            Matrix worldViewProj = world * viewProj;
-            worldViewProj.Transpose();
 
-            mShader.SetShaderParam(mDevice, new Vector3(0.0f, 0.0f, 5.0f), mMesh.Material.DiffuseMap.TextureResource, mMesh.Material.Ambient, mMesh.Material.Diffuse, ref world, ref mView, ref mProj);
+            mShader.SetShaderParam(mDevice,
+                new Vector3(0.0f, 0.0f, 5.0f),
+                mMesh.Material.DiffuseMap.TextureResource,
+                mMesh.Material.Ambient,
+                mMesh.Material.Diffuse,
+                ref world,
+                mCamera.View,
+                mCamera.Projection);
             mShader.Apply(mDevice);
 
             mMesh.Draw(mDevice);

@@ -136,7 +136,7 @@ namespace D3D11Introduction.utils
                     (VertexShaderSignature != null);
         }
 
-        public void SetShaderParam(D3DDevice device, Vector3 lightDirection, ShaderResourceView texture, Vector4 ambientColor, Vector4 diffuseColour, ref Matrix world, ref Matrix view, ref Matrix proj)
+        public void SetShaderParam(D3DDevice device, Vector3 lightDirection, ShaderResourceView texture, Vector4 ambientColor, Vector4 diffuseColour, ref Matrix world, Matrix view, Matrix proj)
         {
             LightBuffer lightBuffer = new LightBuffer()
             {

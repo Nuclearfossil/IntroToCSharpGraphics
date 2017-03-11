@@ -6,13 +6,11 @@ namespace D3D11Introduction
 {
     public class CameraBase
     {
-        protected Vector3 mPosition = new Vector3(0, 0, 5);
+        protected Vector3 mPosition = new Vector3(0, 0, -5);
         protected Vector3 mUp = Vector3.UnitY;
-        protected Vector3 mDirection = new Vector3(0,0,0);
+        protected Vector3 mDirection = new Vector3(0, 0, 1);
 
         protected MouseState mPrevMouse;
-        protected Matrix view;
-        protected Matrix projection;
         protected const float kPitchLimit = 1.4f;
 
         protected const float kSpeed = 0.25f;
@@ -32,13 +30,13 @@ namespace D3D11Introduction
             ScreenHeight = screenHeight;
 
             float ratio = (float)ScreenWidth / (float)ScreenHeight;
-            projection = Matrix.PerspectiveFovRH(kPiOver4, ratio, 0.01f, 1000);
-
+            Projection = Matrix.PerspectiveFovLH(kPiOver4, ratio, 0.01f, 10000);
+            CreateLookAt();
         }
 
         public void CreateLookAt()
         {
-            View = Matrix.LookAtRH(mPosition, mDirection, mUp);
+            View = Matrix.LookAtLH(mPosition, mPosition + mDirection, mUp);
         }
 
         public virtual void Update()
@@ -62,10 +60,10 @@ namespace D3D11Introduction
 
             if (keyboard.IsKeyDown(Key.A))
                 // Strafe by adding a cross product of m_up and m_direction vectors
-                mPosition += Vector3.Cross(mUp, mDirection) * kSpeed;
+                mPosition -= Vector3.Cross(mUp, mDirection) * kSpeed;
 
             if (keyboard.IsKeyDown(Key.D))
-                mPosition -= Vector3.Cross(mUp, mDirection) * kSpeed;
+                mPosition += Vector3.Cross(mUp, mDirection) * kSpeed;
 
             if (keyboard.IsKeyDown(Key.Space))
                 mPosition += mUp * kSpeed;
@@ -75,9 +73,8 @@ namespace D3D11Introduction
 
             if (mouse.IsButtonDown(MouseButton.Right))
             {
-                // Calculate yaw to look around with a mouse
-                
-                mDirection = Vector3.Transform(mDirection, Matrix3x3.RotationAxis(mUp, -kMouseSpeedX * (mouse.X - mPrevMouse.X)));
+                // Calculate yaw to look around with a mouse                
+                mDirection = Vector3.Transform(mDirection, Matrix3x3.RotationAxis(mUp, -kMouseSpeedX * -(mouse.X - mPrevMouse.X)));
 
                 // Pitch is limited to m_pitchLimit
                 float angle = kMouseSpeedY * (mouse.Y - mPrevMouse.Y);
@@ -92,6 +89,7 @@ namespace D3D11Introduction
         }
 
         public Matrix View { get; protected set; }
+        public Matrix Projection { get; protected set; }
 
         /// <summary>
         /// Yaw of the camera in radians.

@@ -101,10 +101,10 @@ namespace D3D11Introduction
             Matrix world = Matrix.RotationX(currentTime) * Matrix.RotationY(currentTime * 2.0f) * Matrix.RotationZ(currentTime * 0.7f);
             world *= Matrix.Translation(new Vector3(0.0f, 0.0f, 10.0f));
             //Matrix world = Matrix.Translation(new Vector3(0.0f, 0.0f, 10.0f));
-            Matrix worldViewProj = world * viewProj;
-            worldViewProj.Transpose();
+            //Matrix worldViewProj = world * viewProj;
+            //worldViewProj.Transpose();
 
-            mShader.SetShaderParam(mDevice, new Vector3(5.0f, 5.0f, 5.0f), mMesh.Material.DiffuseMap.TextureResource, mMesh.Material.Ambient, mMesh.Material.Diffuse, ref world, ref mView, ref mProj);
+            mShader.SetShaderParam(mDevice, new Vector3(5.0f, 5.0f, 5.0f), mMesh.Material.DiffuseMap.TextureResource, mMesh.Material.Ambient, mMesh.Material.Diffuse, ref world, mView, mProj);
             mShader.Apply(mDevice);
 
             mMesh.Draw(mDevice);
