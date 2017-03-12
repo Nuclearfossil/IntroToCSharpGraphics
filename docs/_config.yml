@@ -19,6 +19,5 @@ sass:
 exclude: [
 .git,
 .gitignore,
-README.md,
 .sass-cache
 ]
