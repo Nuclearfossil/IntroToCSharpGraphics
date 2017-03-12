@@ -1,0 +1,823 @@
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>An Introduction to C# graphics | An Introduction to DirectX 11 3D programming using C# </title>
+  <meta name="theme-color" content="#222222" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="/js/jquery.min.js"></script>
+  <script src="/js/bootstrap.min.js"></script>
+  <script src="/js/header.js"></script>
+  <script src="/js/toc.js"></script>
+  <link href="/css/bootstrap.min.css" rel="stylesheet">
+  <link href="/css/theme.css" rel="stylesheet">
+  <link href="/css/syntax.css" rel="stylesheet">
+  <link href="/css/font-awesome/css/font-awesome.min.css" rel="stylesheet">
+</head>
+
+<body>
+
+  
+
+  
+
+
+ <script type="text/javascript">
+  WebFontConfig = {
+    google: {
+      families: ['Ubuntu::latin']
+    }
+  };
+  (function() {
+    var wf = document.createElement('script');
+    wf.src = ('https:' == document.location.protocol ? 'https' : 'http') +
+      '://ajax.googleapis.com/ajax/libs/webfont/1/webfont.js';
+    wf.type = 'text/javascript';
+    wf.async = 'true';
+    var s = document.getElementsByTagName('script')[0];
+    s.parentNode.insertBefore(wf, s);
+  })();
+</script>
+
+  <nav class="navbar navbar-inverse navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="/">An Introduction to C# graphics</a>
+      </div>
+      <div class="collapse navbar-collapse">
+        <ul class="nav navbar-nav">
+          <li><a href="/">/home</a></li>
+          <li><a href="/archive.html">/archive</a></li>
+          <li><a href="/tags.html">/tags</a></li>
+          <li><a href="/about.html">/about</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+    <div class="wrapper">
+      <div class="content">
+        <div class="container container-center">
+          <div class="row">
+            <div class="col-md-2 hidden-xs">
+              <div class="sidebar ">
+  <h2>Recent Posts</h2>
+  <ul>
+    
+    <li><a href="/2017/03/D3DIntroduction">An Introduction to DirectX 11 3D programming using C#</a></li>
+    
+    <li><a href="/2017/02/OpenGLShaders">An Introduction to OpenGL and the Shader Language</a></li>
+    
+    <li><a href="/2017/01/OpenGLFixedFunction">An Introduction to OpenGL and the Fixed Function Pipeline in C#</a></li>
+    
+  </ul>
+</div>
+
+<div class="sidebar">
+  <h2>Tags</h2>
+  <ul class="sideBarTags">
+    
+    
+    <li>
+      <a href="/tag/C Sharp" data-toggle="tooltip" data-placement="right" title="1">
+        <span>C Sharp</span></a></li>
+    
+    <li>
+      <a href="/tag/C#" data-toggle="tooltip" data-placement="right" title="2">
+        <span>C#</span></a></li>
+    
+    <li>
+      <a href="/tag/DirectX 11" data-toggle="tooltip" data-placement="right" title="1">
+        <span>DirectX 11</span></a></li>
+    
+    <li>
+      <a href="/tag/Fixed Function Pipeline" data-toggle="tooltip" data-placement="right" title="1">
+        <span>Fixed Function Pipeline</span></a></li>
+    
+    <li>
+      <a href="/tag/Fragment Shaders" data-toggle="tooltip" data-placement="right" title="1">
+        <span>Fragment Shaders</span></a></li>
+    
+    <li>
+      <a href="/tag/OpenGL" data-toggle="tooltip" data-placement="right" title="2">
+        <span>OpenGL</span></a></li>
+    
+    <li>
+      <a href="/tag/Pixel Shaders" data-toggle="tooltip" data-placement="right" title="1">
+        <span>Pixel Shaders</span></a></li>
+    
+    <li>
+      <a href="/tag/Vertex Shaders" data-toggle="tooltip" data-placement="right" title="1">
+        <span>Vertex Shaders</span></a></li>
+    
+  </ul>
+</div>
+
+            </div>
+            <div class="col-md-10">
+              <div class="article">
+                <div class="well">
+                  <h1><a href="/2017/03/D3DIntroduction">An Introduction to DirectX 11 3D programming using C#</a></h1>
+                  <div class="post-meta">
+                    <div class="post-time">
+                      <i class="fa fa-calendar"></i>
+                      <time>11 Mar 2017</time>
+                    </div>
+                    <ul>
+                      
+                        <li><a href="/tag/DirectX 11">DirectX 11</a></li>
+                      
+                        <li><a href="/tag/C Sharp">C Sharp</a></li>
+                      
+                        <li><a href="/tag/Vertex Shaders">Vertex Shaders</a></li>
+                      
+                        <li><a href="/tag/Pixel Shaders">Pixel Shaders</a></li>
+                      
+                    </ul>
+                  </div>
+                  <div class="post-content">
+                    <div id="toc" class="toc"></div>
+                    <h1 id="direct3d---introduction">Direct3D - Introduction</h1>
+
+<p>In our past examples, we’ve looked at Fixed Function Pipelines and a quick look at the OpenGLb shader pipeline. This time around, we’ll take a look at setting up and using DirectX 11.</p>
+
+<p>SharpDX is the underlying library that we’re using for DirectX, as C# doesn’t have a native binding/library for accessing lower level graphics libraries.</p>
+
+<p>DirectX isn’t just a graphics library; it has support for Audio, Direct2D, Input, Fonts,  video, etc. However all we’re looking at in this lesson is the graphics side of things.</p>
+
+<p>SharpDX doesn’t abstract out as much as OpenTK does, so we have a fair bit more setup to do in order to be able to just clear a screen. Let’s take it in steps:</p>
+
+<h2 id="creating-the-rendering-context">Creating the rendering context</h2>
+
+<p>SharpDX provides a <code class="highlighter-rouge">RenderForm</code> class that handles all the basic windows setup and management functionality.</p>
+
+<p>To initialize D3D, we begin by creating a D3D 11 Device and a D3D Device context. These two interfaces are our abstraction to the video card. So how do we do that?</p>
+
+<p>To create a D3D device, you need to define a swapchain. A swapchain defines:</p>
+
+<ol>
+  <li>The number of buffers used in page flipping.</li>
+  <li>How big the buffers should be.</li>
+  <li>The format of the backbuffer (color depth).</li>
+  <li>Refresh rate.</li>
+  <li>The handle to the window</li>
+  <li>Windowed/fullscreen</li>
+</ol>
+
+<p>Creating a swapchain looks like this:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>mSwapChainDescription = new SwapChainDescription()
+{
+    BufferCount = 1,
+    ModeDescription =
+        new ModeDescription(
+            mRenderForm.ClientSize.Width,
+            mRenderForm.ClientSize.Height,
+            new Rational(60, 1),
+            Format.R8G8B8A8_UNorm),
+    IsWindowed = true,
+    OutputHandle = mRenderForm.Handle,
+    SampleDescription = new SampleDescription(1, 0),
+    Usage = Usage.RenderTargetOutput
+};
+</code></pre>
+</div>
+
+<p>Now that there is a definition of the swapchain, we need to build the D3D device. It’s pretty simple:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>D3DDevice.CreateWithSwapChain(D3DDriverType.Hardware,
+    DeviceCreationFlags.None,
+    mSwapChainDescription,
+    out mDevice,
+    out mSwapChain);
+</code></pre>
+</div>
+
+<p>For reference: <a href="https://goo.gl/hIOU7z">Creating the D3D Device</a></p>
+
+<p>Next up, we create a device context. From Microsoft:</p>
+
+<blockquote>
+  <p>A device context contains the circumstance or setting in which a device is used. More specifically, a device context is used to set pipeline state and generate rendering commands using the resources owned by a device. Direct3D 11 implements two types of device contexts, one for immediate rendering and the other for deferred rendering.</p>
+</blockquote>
+
+<p>For this example, we’re going to be working with Immediate contexts.</p>
+
+<p>We also need buffers for the Backbuffer, front buffer, depth buffer. We build the buffers when we resize the window (or are in fullscreen mode and want to change resolutions).</p>
+
+<p>Each buffer has a specific way to be generated:</p>
+
+<h3 id="backbuffer-is-acquired-from-the-swap-chain">BackBuffer is acquired from the Swap Chain</h3>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>mBackBuffer = Texture2D.FromSwapChain&lt;Texture2D&gt;(mSwapChain, 0);
+</code></pre>
+</div>
+
+<h3 id="render-target-is-created-based-of-the-back-buffer">Render Target is created based of the Back Buffer</h3>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>mRenderView = new RenderTargetView(mDevice, mBackBuffer);
+</code></pre>
+</div>
+
+<h3 id="the-depth-buffer">The Depth buffer</h3>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>mDepthBuffer = new Texture2D(mDevice, new Texture2DDescription()
+{
+    Format = Format.D32_Float_S8X24_UInt,
+    ArraySize = 1,
+    MipLevels = 1,
+    Width = mRenderForm.ClientSize.Width,
+    Height = mRenderForm.ClientSize.Height,
+    SampleDescription = new SampleDescription(1, 0),
+    Usage = ResourceUsage.Default,
+    BindFlags = BindFlags.DepthStencil,
+    CpuAccessFlags = CpuAccessFlags.None,
+    OptionFlags = ResourceOptionFlags.None
+});
+</code></pre>
+</div>
+<p>### The Depth Stencil View buffer</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>    mDepthView = new DepthStencilView(mDevice, mDepthBuffer);
+</code></pre>
+</div>
+
+<p>Why do they call it a Render Target and Depth Stencil ‘view’? Microsoft separates the concepts of resources (blocks of memory) and views. A view is just that, a ‘view’ into the data.</p>
+
+<p>Now that all the buffers/views have been created, we need to finalize the binding:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>mDeviceContext.Rasterizer.SetViewport(
+    new Viewport(0, 0,
+        mRenderForm.ClientSize.Width,
+        mRenderForm.ClientSize.Height,
+        0.0f, 1.0f));
+mDeviceContext.OutputMerger.SetTargets(mDepthView, mRenderView);
+</code></pre>
+</div>
+
+<h2 id="loading-shaders">Loading Shaders</h2>
+
+<p>Loading shaders in D3D is actually pretty easy:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>mVertexShaderResult = ShaderBytecode.CompileFromFile("example01.fx", "VS", "vs_4_0");
+mVertexShader = new VertexShader(mDevice, mVertexShaderResult);
+
+mPixelShaderResult = ShaderBytecode.CompileFromFile("example01.fx", "PS", "ps_4_0");
+mPixelShader = new PixelShader(mDevice, mPixelShaderResult);
+</code></pre>
+</div>
+
+<p>The input and output of shaders are defined as part of a Shader ‘Signature’. We define that like so:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>mSignature = ShaderSignature.GetInputSignature(mVertexShaderResult);
+</code></pre>
+</div>
+
+<p>Defining the vertex layout is a little different than what we’ve seen in OpenGL:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>mLayout = new InputLayout(
+    mDevice,
+    mSignature,
+    new[]
+    {
+        new InputElement("POSITION", 0, Format.R32G32B32A32_Float, 0, 0),
+        new InputElement("COLOR", 0, Format.R32G32B32A32_Float, 16, 0)
+    });
+</code></pre>
+</div>
+
+<p>In the Shader file, this binds to the following:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>struct VS_IN
+{
+	float4 pos : POSITION;
+	float4 col : COLOR;
+};
+</code></pre>
+</div>
+
+<p>You can see how the two correlate to each other this way.</p>
+
+<p>Each <code class="highlighter-rouge">InputElement</code> defines each element in the input layout - in this case, we’re defining the Position and Color, the format of each position and color are 4 floats. In order, the arguments are:</p>
+
+<ul>
+  <li>The HLSL semantic associated with this element in a shader input-signature.</li>
+  <li>The semantic index for the element. A semantic index modifies a semantic, with an integer index number. A semantic index is only needed in a case where there is more than one element with the same semantic. For example, a 4x4 matrix would have four components each with the semantic name matrix, however each of the four component would have different semantic indices (0, 1, 2, and 3).</li>
+  <li>The data type of the element data.</li>
+  <li>Offset (in bytes) between each element. Use AppendAligned for convenience to define the current element directly after the previous one, including any packing if necessary.</li>
+  <li>An integer value that identifies the input-assembler. Valid values are between 0 and 15.</li>
+</ul>
+
+<h2 id="definint-a-vertex-buffer">Definint a Vertex Buffer</h2>
+
+<p>Again, pretty simple - Use <code class="highlighter-rouge">D3DBuffer</code> to create the data:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>mVertices = D3DBuffer.Create(
+    mDevice,
+    BindFlags.VertexBuffer,
+    new[]
+    {
+      new Vector4(-1.0f, -1.0f, -1.0f, 1.0f), // Front Vertex
+      new Vector4(1.0f, 0.0f, 0.0f, 1.0f), // Front Color
+
+      new Vector4(-1.0f,  1.0f, -1.0f, 1.0f), // Vertex
+      new Vector4(1.0f, 0.0f, 0.0f, 1.0f), // Color
+
+      ...
+
+      });
+</code></pre>
+</div>
+
+<h2 id="and-a-constant-buffer">And a constant buffer</h2>
+
+<p>We talked about constant buffers in the OpenGL shader tutorial, but to reiterate, a Shader Constant is input from the CPU to a shader. For example, a shader constant for the Model-View-Projection matrix is defined through a constant buffer.</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>mConstantBuffer = new D3DBuffer(
+                    mDevice,
+                    Utilities.SizeOf&lt;Matrix&gt;(),
+                    ResourceUsage.Default,
+                    BindFlags.ConstantBuffer,
+                    CpuAccessFlags.None,
+                    ResourceOptionFlags.None,
+                    0);
+</code></pre>
+</div>
+
+<p>The size of the constant buffer, in this example, is defined by the size of a Matrix class - which is the Model-View-projection matrix.</p>
+
+<p>Also note, that in D3D, it’s more common to refer to it as a World-View-Projection matrix, rather than Model-View-Projection. For the rest of this document we will use that notation.</p>
+
+<h2 id="prepping-for-rendering">Prepping for Rendering</h2>
+
+<p>Time to set up the Device context for rendering:</p>
+
+<ul>
+  <li>Set the input layout</li>
+  <li>Set the topology</li>
+  <li>Set the Vertex buffer binding (tell the VB what to draw)</li>
+  <li>Set the Constant buffer (the World-View-Projection Matrix) to the appropriate constant in the shader.</li>
+  <li>Set the Vertex and Pixel shaders</li>
+</ul>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>mDeviceContext.InputAssembler.InputLayout = mLayout;
+mDeviceContext.InputAssembler.PrimitiveTopology = PrimitiveTopology.TriangleList;
+mDeviceContext.InputAssembler.SetVertexBuffers(
+    0,
+    new VertexBufferBinding(mVertices, Utilities.SizeOf&lt;Vector4&gt;() * 2, 0));
+mDeviceContext.VertexShader.SetConstantBuffer(0, mConstantBuffer);
+mDeviceContext.VertexShader.Set(mVertexShader);
+mDeviceContext.PixelShader.Set(mPixelShader);
+</code></pre>
+</div>
+
+<h2 id="finally-rendering-the-data">Finally Rendering the data</h2>
+
+<p>Building matrices if fairly straightforward:</p>
+
+<p><code class="highlighter-rouge">Matrix viewProj = Matrix.Multiply(mView, mProj);</code></p>
+
+<p>Clearing buffers before rendering:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>mDeviceContext.ClearDepthStencilView(
+    mDepthView,
+    DepthStencilClearFlags.Depth,
+    1.0f,
+    0);
+mDeviceContext.ClearRenderTargetView(mRenderView, Color.Black);
+</code></pre>
+</div>
+
+<p>Updating the constant buffer with data:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>mDeviceContext.UpdateSubresource(ref worldViewProj, mConstantBuffer);
+</code></pre>
+</div>
+
+<p>And then to draw:</p>
+
+<p><code class="highlighter-rouge">mDeviceContext.Draw(36, 0);</code></p>
+
+<h2 id="and-the-shader">And the shader</h2>
+
+<p>Shader semantics are fairly similar between GLSL and HLSL. The differences really come down to syntax, more than anything else. For the Vertex Shader, we’ve already seen the format for the input data (the position and the color per vertex) defined. We also see a definition for the input for the Pixel Shader defined like so:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>struct PS_IN
+{
+	float4 pos : SV_POSITION;
+	float4 col : COLOR;
+};
+</code></pre>
+</div>
+
+<p>And then there’s the constant in the shader file, defined for the World-View-Projection matrix:</p>
+
+<p><code class="highlighter-rouge">float4x4 worldViewProj;</code></p>
+
+<p>Now that we have the data defined, let’s see a vertex shader in action:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>PS_IN VS( VS_IN input )
+{
+	PS_IN output = (PS_IN)0;
+
+	output.pos = mul(input.pos, worldViewProj);
+	output.col = input.col;
+
+	return output;
+}
+</code></pre>
+</div>
+
+<p>Breaking it down line by line, we’re seeing the function signature for the Vertex shader defined as:</p>
+
+<p><code class="highlighter-rouge">PS_IN</code> is the output from the function (the definition is defined earlier), the name of the function, <code class="highlighter-rouge">VS</code> and the input arguments into the Vertex Shader <code class="highlighter-rouge">VS_IN input</code>.</p>
+
+<p>In the body of the function, we define the output of the function as the variable <code class="highlighter-rouge">output</code> - which is of type <code class="highlighter-rouge">PS_IN</code>. and we initialize it all to 0.</p>
+
+<p>the next two lines populate both the position and color of the output.</p>
+
+<p>And, like all functions, we return a value, the <code class="highlighter-rouge">output</code> variable.</p>
+
+<p>That’s the Vertex Shader. Now, looking at the Pixel shader, it should be fairly obvious what each is doing (to a point).</p>
+
+<p>The function <code class="highlighter-rouge">PS</code> returns a <code class="highlighter-rouge">float4</code> - that represents a color of the pixel that we’re trying to render. The input is the result out of the <code class="highlighter-rouge">VS</code> function (ergo why it’s called <code class="highlighter-rouge">PS_IN</code> - Pixel Shader INput).</p>
+
+<p>So, that only leaves the <code class="highlighter-rouge">: SV_Target</code> bit on the pixel shader function definition.</p>
+
+<p><code class="highlighter-rouge">SV_Target</code> is a type of ‘System-Value’ semantics; it’s defined as part of the HSLS compiler. When used in a pixel shader, it describes the pixel location.</p>
+
+<p>To summarize, the vertex shader does nothing more than transform the vertex (and thus the triangle) into screen space and then interpolate the color passed in to the vertex shader across the triangle.</p>
+
+<p>HLSL shader sematics can be found <a href="https://goo.gl/3N8AnL">here</a>.</p>
+
+<h1 id="building-a-better-library">Building a better library</h1>
+<p>## The Shader Class<br />
+We want to simplify out coding process by creating several new classes that will allow us to more rapidly create applications. We’ll start out by building out a shader class to work with.</p>
+
+<p>We’ve created a new file, <code class="highlighter-rouge">Example02.cs</code>. We still load the same shader file (shaders\example01.fx) but that is now loaded into a <code class="highlighter-rouge">Shader</code> class: <code class="highlighter-rouge">mShader</code>.</p>
+
+<p><code class="highlighter-rouge">Shader</code> is and IDisposable, so make sure you dispose of it correctly when you use it.  There’s a buch of things in there that we aren’t going to be talking about just yet, but patience, we will get to them!</p>
+
+<p>We have multiple <code class="highlighter-rouge">Load</code> methods. One expecting an ‘fx’ file, and one that separates out the Pixel and Vertex shaders. I prefer to use separate files for shaders, but that is totally optional. So going forward with other programs, I’ll be using separate files.</p>
+
+<p>The process for using a Shader class is this - create the textual version of the shader (either as a hard-coded string or, as in this method, load the program off disk), compile the shader, set the parameters on the shader, and then call <code class="highlighter-rouge">Apply</code> on the shader.</p>
+
+<h2 id="the-cube-class">The Cube class</h2>
+<p>I think we’re all tired of seeing the same code copied and pasted for the sample cube we use, so I’ve generated a <code class="highlighter-rouge">Cube</code> class that encapsulates all this. Yes, it’s just a copy/paste of the code that handles all the relevant data and functionality of preparing a cube for rendering. But it will also be the inspiration for other classes later on.</p>
+
+<h1 id="extending-the-cube-class">Extending the Cube class</h1>
+<p>I expect that everyone is familiar with normals. Let’s extend the cube class to contain normals in it’s data. Looking at the class <code class="highlighter-rouge">CubeNormals</code>, you can now see that we have vectors that contain the additional normal data.</p>
+
+<p>There’s no special reason why the vertex layout is in [position, normal, color] arrangement. We could easily have set up the orientation in any format we choose. We do, however, have to make sure that the <em>stride</em> of the layout is set correctly. In this case, we’ve added one more <code class="highlighter-rouge">Vector4</code> into the mix, so our stride need to be updated appropriately. I think you can see that updating the stride manually like this is a pain. Once your data format is fairly concrete, you don’t have to worry as much about changing the format. However, it is highly possible that different meshes may have different data requirements (binormals, multiple UV and Color sets …) so you may want to take that into consideration with how you calculate your vertex stride.</p>
+
+<p>We also keep the Input Layout of the vertex data separate from the Cube structure. I’m currently torn on that - it arguably makes more sense to bind it elsewhere; since it uses the VertexShaderSignature, perhaps it should reside in the shader itself? I may change that in a later revision of the <code class="highlighter-rouge">Shader</code> class.</p>
+
+<p>Looking at the method for setting the parameters on the shader, you now can see that we’re setting a few more data points - the last three, to be more specific. In this case, we’re looking at a light direction, an ambient color and a diffuse color. This example shows us how to properly set a Lighting ‘Constant buffer’ in D3D. Following into the <code class="highlighter-rouge">Shader</code> class, you can see that we have a shader that contains a struct called <code class="highlighter-rouge">LightBuffer</code>. It contains 2 <code class="highlighter-rouge">Vector4</code> elements as well as a <code class="highlighter-rouge">Vector3</code> element and a final <code class="highlighter-rouge">float</code> called <code class="highlighter-rouge">padding</code>.</p>
+
+<p>Why the <code class="highlighter-rouge">padding</code> element? And why the <code class="highlighter-rouge">[StructLayout(Layoutkind.Sequential)]</code> decorator? Hitting up the MSDN docs gives us a great hint as to why:<br />
+link: (https://msdn.microsoft.com/en-us/library/system.runtime.interopservices.layoutkind(v=vs.110).aspx)</p>
+
+<blockquote>
+  <p>Controls the layout of an object when exported to unmanaged code.</p>
+</blockquote>
+
+<p>Aha. But no, not really. It actually it more related to the attribute <code class="highlighter-rouge">LayoutKind.Sequential</code></p>
+
+<blockquote>
+  <p>The members of the object are laid out sequentially, in the order in which they appear when exported to unmanaged memory. The members are laid out according to the packing specified in StructLayoutAttribute.Pack, and can be noncontiguous.</p>
+</blockquote>
+
+<p>We don’t want noncontiguous when sending data to our GPU. OK, that’s all fine and dandy, but why the <code class="highlighter-rouge">padding</code>?</p>
+
+<p>Rules for packing constant buffers can be a little odd. Constant buffers are expected to align on a 16 byte boundary; the start of a variable in a constant buffer needs to be aligned on a 16 byte boundary. So we add a float into the mix to ensure that if we add another variable at the end of this struct, it comes after the padding and ensures that we’re properly aligned.</p>
+
+<p>The other way of solving this is to be more explicit in how we define our elements in the structure:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>[StructLayout(LayoutKind.Explicit)]
+public struct LightBuffer
+{
+    [FieldOffset(0)]
+    public Vector4 ambientColor;
+
+    [FieldOffset(16)]
+    public Vector4 diffuseColor;
+
+    [FieldOffset(32)]
+    public Vector3 lightDirection;
+}
+</code></pre>
+</div>
+
+<p>Both have their pros and cons. I’ll leave it up to the reader to decide which is best for their needs.</p>
+
+<p>Now that we have the layout of the constant buffer, we need a <code class="highlighter-rouge">BufferDescription</code> for that buffer:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>BufferDescription lightBufferDesc = new BufferDescription()
+{
+    Usage = ResourceUsage.Dynamic,
+    SizeInBytes = Utilities.SizeOf&lt;LightBuffer&gt;(),
+    BindFlags = BindFlags.ConstantBuffer,
+    CpuAccessFlags = CpuAccessFlags.Write,
+    OptionFlags = ResourceOptionFlags.None,
+    StructureByteStride = 0
+};
+
+mLightConstantBuffer = new D3DBuffer(device, lightBufferDesc);
+</code></pre>
+</div>
+
+<p>and to put data into this buffer for the shader to use:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>DataStream mappedResourceLight = default(DataStream);
+device.ImmediateContext.MapSubresource(mLightConstantBuffer, MapMode.WriteDiscard, MapFlags.None, out mappedResourceLight);
+mappedResourceLight.Write(lightBuffer);
+device.ImmediateContext.UnmapSubresource(mLightConstantBuffer, 0);
+
+device.ImmediateContext.PixelShader.SetConstantBuffer(0, mLightConstantBuffer);
+</code></pre>
+</div>
+
+<h1 id="texturing">Texturing</h1>
+<p>Rendering stuff isn’t very useful if you can’t texture it. This next bit covers some fairly simple aspects of loading and using textures in D3D</p>
+
+<p>First thing first, let’s look at our new model class, <code class="highlighter-rouge">CubeTextureNormals</code>. From it’s name, you can probably tell what it contains: positions, normals, and … textures?</p>
+
+<p>Well, not really, ‘textures’, but texture UV coordinates. Simply put, UV coordinate sets define where, in ‘texture space’ a vertex would fall on a texture. Texture space is defined between 0 and 1 and starts at the top left of a texture.</p>
+
+<p>For example:</p>
+
+<p><img src="/uv_coordinates.png" alt="UV coordinates" /></p>
+
+<p>For our needs, we are only using 2D coordinates (yes, you can have 3D textures). Applying a triangle onto the texture can be visualized like so:</p>
+
+<p><img src="/triangle_uv_coordinates.png" alt="Triangle mapped to UV" /></p>
+
+<p>Points a, b and c would have coresponding UV values mappeed against the texture. Nothing crazy there. I’ve coded them by hand (you’re welcome) but you’d want to use a proper 3D DCC package to do it right. There are also various projections you could use to automatically generate the UV coordinates onto regular shapes, but that’s beyond the scope of this article.</p>
+
+<p>Now that you have UV data for your content, we need to load some textures to use!  To that end, I’ve created a <code class="highlighter-rouge">Texture</code> class we can use. There’s really nothing surprising here. SharpDX has access to the ‘Windows Imaging Component’; a Microsoft API that gives us access to some fairly low level functionality for reading/writing image data. (link: https://msdn.microsoft.com/en-us/library/windows/desktop/ee719902.aspx). The big takeaway here is that WIC allows us to read pretty much any image data type.</p>
+
+<p>Note: as an exercise to the reader, there is an intentional bug here. Where is it? What does it do? How do you fix it?</p>
+
+<p>The takeaway from this class is that we want to provide to D3D a <code class="highlighter-rouge">ShaderResourceView</code> that maps a <code class="highlighter-rouge">Texture2D</code>. That resource is then fed into a ‘Sampler’ that can do many, many things to a texture. I won’t go over all the grubby details of that, aside from the fact that allows for interpolation between pixels of an image, or combination of pixels in an image, depending upon how close/far from a triangle the viewer is.</p>
+
+<p>You create a sampler using a <code class="highlighter-rouge">SamplerStateDescription</code> and a <code class="highlighter-rouge">SamplerState</code>. The <code class="highlighter-rouge">SamplerStateDescription</code> is just that, a description object that says how to create the <code class="highlighter-rouge">SamplerState</code>. From the MSDN, the <code class="highlighter-rouge">SamplerState</code>:</p>
+
+<blockquote>
+  <p>Sampler state determines how texture data is sampled using texture addressing modes, filtering, and level of detail.  Sampling is done each time a texture pixel, or texel, is read from a texture. A texture contains an array of texels, or texture pixels. The position of each texel is denoted by (u,v), where u is the width and v is the height, and is mapped between 0 and 1 based on the texture width and height. The resulting texture coordinates are used to address a texel when sampling a texture.</p>
+</blockquote>
+
+<p>link: (https://msdn.microsoft.com/en-us/library/ff604998.aspx)</p>
+
+<p>I do want to go into much more detail on this, but Jay is looking to talk more about SamplerStates and different types of filtering. I’m going to park this topic here until he has a chance to talk about it.</p>
+
+<p>Just like everything else we’ve done, we need to let the D3D pipeline know what’s going on. We enable a sampler like so:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code> mDeviceContext.PixelShader.SetSampler(0, mSampler);
+</code></pre>
+</div>
+
+<p>And we update the shader to now take a <code class="highlighter-rouge">ShaderViewResource</code> that maps to our texture:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>mShader.SetShaderParam(mDevice, new Vector3(0.0f, 5.0f, 5.0f), mTexture.TextureResource, new Vector4(1.0f, 1.0f, 1.0f, 1.0f), new Vector4(0.1f, 0.1f, 0.1f, 1.0f), ref world, ref viewProj);
+</code></pre>
+</div>
+
+<p>And in the shader, we take that <code class="highlighter-rouge">ShaderResourceView</code> and apply it to the pixel shader (the vertex shader doesn’t use it at all)</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>public void SetShaderParam(D3DDevice device, Vector3 lightDirection, ShaderResourceView texture, Vector4 ambientColor, Vector4 diffuseColour, ref Matrix world, ref Matrix viewproj)
+{
+...
+   device.ImmediateContext.PixelShader.SetShaderResource(0, texture);
+}
+</code></pre>
+</div>
+
+<h2 id="but-thats-not-all">But that’s not all!</h2>
+
+<p>One other thing that we do in <code class="highlighter-rouge">Example04</code> is break down the transformation matrices passed into the vertex shader. Previously we’ve been combining all the matrices into a world-view-projection matrix. However that may not be useful in the long run. When we have multiple objects, you may want to pre-computer the view-projection matrix, but the world matrix will change from object to objet (they all won’t be transformed into world space - the GPU is better at doing that).</p>
+
+<p>So, we have a <code class="highlighter-rouge">MatrixBuffer</code>, laid out very similarly to the LightBuffer!</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>[StructLayout(LayoutKind.Sequential)]
+internal struct MatrixBuffer
+{
+    public Matrix world;
+    public Matrix viewproj;
+}
+</code></pre>
+</div>
+
+<p>No padding necesary here.</p>
+
+<p>Sending this across to the GPU is, again, fairly straightforward:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>device.ImmediateContext.MapSubresource(mMatrixConstantBuffer,
+                                       MapMode.WriteDiscard,
+                                       MapFlags.None,
+                                       out mMappedResourceMatrix);
+mMappedResourceMatrix.Write(matrixBuffer);
+device.ImmediateContext.UnmapSubresource(mMatrixConstantBuffer, 0);
+
+device.ImmediateContext.VertexShader.SetConstantBuffer(1, mMatrixConstantBuffer);
+</code></pre>
+</div>
+
+<p>However, we do have to have a bit of glue code on the shader side of things. The definition of that buffer in the vertex shader looks like so:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>cbuffer MatrixBuffer : register(b1)
+{
+    matrix world;
+    matrix viewproj;
+}
+</code></pre>
+</div>
+
+<p>The <code class="highlighter-rouge">register(b1)</code> tells the HLSL shader compiler what constant buffer register (or ‘slot’) to use for reading the data. In the C# side, that maps to the ‘1’ in</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>device.ImmediateContext.VertexShader.SetConstantBuffer(1, mMatrixConstantBuffer);
+</code></pre>
+</div>
+
+<p>The layout of the <code class="highlighter-rouge">register</code> keyword can be found here: (https://msdn.microsoft.com/en-us/library/windows/desktop/dd607359(v=vs.85).aspx)</p>
+
+<p>Shader model reference link: (https://msdn.microsoft.com/en-us/library/windows/desktop/bb509638(v=vs.85).aspx)</p>
+
+<h1 id="something-sort-of-resembling-a-framework-example05cs">Something sort of resembling a framework (Example05.cs)</h1>
+<p>No, it’s not <em>really</em> a framework now, but it’s starting to look more an more like one. Yes, it’s still another spinning cube, but the cube, this time, was generated in Maya, not by hand. Thus we now have a rudimentary <code class="highlighter-rouge">RenderMesh</code> class that holds a renderable object.</p>
+
+<p>So, a <code class="highlighter-rouge">RenderableMesh</code> has a D3DBuffer for vertex data, only reads Triangles (no index buffer at this point), and also contains a <code class="highlighter-rouge">RenderMaterial</code> class instance.  For a lot of you, this is old hat, especially if you’ve worked in any 3D DCC, but a Material in this case defines color information that should be applied to a mesh. Typically that includes an ambient color, specular, diffuse … textures … it really depends on your shading model.  For this case, tho, we’re going to use a fairly simple shading model; ambient color, diffuse color and a diffuse map.  In a later example, we’re going to do much, much more complex shaders.</p>
+
+<p>However, we need to be able to load data from an intermediate file format. In this case, .fbx (although other formats are supported). Are we going to write our own import library? Hell no. There’s a fantastics Open Source library out there for both C++ and C# called Open Asset Import library: (https://github.com/assimp)</p>
+
+<p>Yes, it’s called AssImp. Shut up.</p>
+
+<p>What I’ve done is created a static class called <code class="highlighter-rouge">MeshManager</code> that tracks loaded meshes (so you don’t re-load an existing mesh) and provides a <code class="highlighter-rouge">RenderMesh</code> for you. It uses the AssImp library to do all the heavy lifting. What we do with that library is access all the vertex and material data and generate the <code class="highlighter-rouge">RenderMesh</code> and <code class="highlighter-rouge">RenderMaterial</code> from it. There are a few convenience functions in there (building a proper path to the assets, including textures), as well as some data validation.</p>
+
+<p>But there is a lot more it can (and will) do. Loading an asset from an fbx, dae or other file format is not a quick process. It’s fairly complex. Also, intermediate file formats are <em>large</em>. They don’t have to be. Especially considering what we want as data. So the actual goal of this tool class will be to eventually generate a ‘transform’ of an intermediate data file into a highly compact and potentially streamable version of the data, in binary form.  But more on that later (much later).</p>
+
+<p>To that end, I’ve also updated the Shader as well - the constant buffer for the <code class="highlighter-rouge">LightBuffer</code> hasn’t changed, but we’ve broken the <code class="highlighter-rouge">MatrixBuffer</code> down even further to contain the workd, view and projection matrices. This is far from optimal, but there’s a reason for this madness.</p>
+
+<p>See, as I was building <code class="highlighter-rouge">Example05</code>, I was having a heck of a time getting the object transformation <em>just</em> right. So I broke the matrices down into their individual components so I could better debug them - make sure that what I was sending in was what I was expecting.</p>
+
+<p>“But wait!” you say, with baited breath. “It’s a shader. How can you debug shaders! In C#!”.</p>
+
+<p>Well, you don’t debug them. In C#. You debug them in the graphics debugger. And in Windows 10. if you’re on Windows 7, you may be SOL.</p>
+
+<p>If you’re in dev studio and start up the ‘Graphics Debugger’, you’re in for some win!</p>
+
+<p><img src="/graphic_debugging_01.png" alt="Graphics Debugging" /></p>
+
+<p>And that starts up the graphics debugger! (BTW - totally available in the community edition of VS!)</p>
+
+<p><img src="/graphic_debugging_02.png" alt="graphic_debugging_02.png" /></p>
+
+<p>Grabbing a sample of what’s going on? Press the ‘Capture Frame’ button:</p>
+
+<p><img src="/graphic_debugging_03.png" alt="graphic_debugging_03.png" /></p>
+
+<p>Once you’ve snagged some frames, you can now start debugging what’s going on. There’s a lot in here, and I won’t cover it all here. But I’ll hit the highlights.</p>
+
+<p>Let’s inspect a captured frame:</p>
+
+<p><img src="/graphic_debugging_04.png" alt="graphic_debugging_04.png" /></p>
+
+<p>That opens up a whole other debugger!</p>
+
+<p><img src="/graphic_debugging_05.png" alt="graphic_debugging_05.png" /></p>
+
+<p>In the ‘Event List’ window, you can see all the D3D calls that have been invoked.  Expand the ‘Draw’ item in it:</p>
+
+<p><img src="/graphic_debugging_06.png" alt="graphic_debugging_06.png" /></p>
+
+<p>and then click on, say, the Input Layout item:</p>
+
+<p><img src="/graphic_debugging_07.png" alt="graphic_debugging_07.png" /></p>
+
+<p>The arrows pointing to the two buttons? Those are the vertex and pixel shader debuggers. When you click on them, they simulate what happens in the appropriate shader. Go ahead and click on the vertex shader ‘play’ button.</p>
+
+<p><img src="/graphic_debugging_08.png" alt="graphic_debugging_08.png" /></p>
+
+<p>That is an honest to god debugger for your vertex and pixel shader. You can set breakpoints, inspect variables. You can’t change values to see what happens, but it is a great way to figure out what’s where and what values are being processed.</p>
+
+<p><img src="/graphic_debugging_09.png" alt="graphic_debugging_09.png" /></p>
+
+<p>You can also inspect and see what are in constant buffers</p>
+
+<p><img src="/graphic_debugging_10.png" alt="graphic_debugging_10.png" /></p>
+
+<p><img src="/graphic_debugging_11.png" alt="graphic_debugging_11.png" /></p>
+
+<p><img src="/graphic_debugging_12.png" alt="graphic_debugging_12.png" /></p>
+
+<p>So, as you can see, we’ve actually got some decent debugging tools with D3D and Visual Studio, out of the box. We’ll explore these tools more as we progress along our merry little way.</p>
+
+<h2 id="a-couple-of-notes">A couple of notes</h2>
+<p>The shaders that we use here are fairly lightweight.  They’re also unoptimized.</p>
+
+<p>I don’t mean, I haven’t witten them optimally (I haven’t, but that’s because I’m being purposely verbose). I’ve disabled compiliation optimizations on the shaders so that the above debugger has better data for being able to debug them.</p>
+
+<p>I’ve done this in the shader compiler:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>public bool Load(D3DDevice device, string vsData, string psData)
+{
+    if (device == null || vsData == string.Empty || psData == string.Empty)
+    {
+        return false;
+    }
+
+    mVertexShaderResult = ShaderBytecode.Compile(vsData, "VS", VertexShaderVersion, ShaderFlags.Debug | ShaderFlags.SkipOptimization);
+    mPixelShaderResult = ShaderBytecode.Compile(psData, "PS", PixelShaderVersion, ShaderFlags.Debug | ShaderFlags.SkipOptimization);
+
+    return (mVertexShaderResult.ResultCode == Result.Ok) &amp;&amp;
+            (mPixelShaderResult.ResultCode == Result.Ok);
+}
+</code></pre>
+</div>
+
+<p>Specifically, using the following flags:</p>
+
+<p><code class="highlighter-rouge">ShaderFlags.Debug | ShaderFlags.SkipOptimization</code></p>
+
+<p>In production code, you’ll want to remove them or replace them with something more appropriate.</p>
+
+<h1 id="and-a-camera-to-round-out-this-mess">And a camera to round out this mess</h1>
+<p>In <code class="highlighter-rouge">Example06</code> I finally introduce a camera class into the mix. It encapsulated the View and Projection matrices, exposes accessors for them and updates the camera based on input.</p>
+
+<p>I’m cheating a fair bit here and using OpenTK’s input library to get the caemra up and running. I will eventually move away from this and use DirectInput (or whatever D3D 11 is calling it these days).  This camera is essentially a near-verbatim copyu of the previous OpenGL camera I created, replacing all the matrix operations with the comparable D3D calls.</p>
+
+<p>Also note that I’m using a Left Handed co-ordinate system. Who says you need to use a Right Handed co-ordinate system!</p>
+
+<p>#Summary<br />
+That’s pretty much it for an intro. We’ll dig further into D3D in a future lesson, exploring lighting models and different material systems.  And with that, I’m out!<br />
+## Additional links</p>
+
+<ul>
+  <li><a href="https://goo.gl/5kHKFz">DirectX 11 Website</a></li>
+</ul>
+
+                    
+
+                  </div>
+                  
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+
+      </div>
+          <footer class="footer-distributed">
+      <div class="container">
+        <div class="footer">
+          <p>Ash Matheson &copy; 2017</p>
+          <h6>Follow me</h6>
+
+<ul class="social-media">
+
+  
+    <li>
+      <a title="nuclearfossil on Github" href="https://github.com/nuclearfossil" target="_blank"><i class="fa fa-github fa-2x"></i></a>
+    </li>
+  
+
+  
+    <li>
+      <a title=" on StackOverflow" href="https://stackoverflow.com/users/" target="_blank"><i class="fa fa-stack-overflow fa-2x"></i></a>
+    </li>
+  
+
+  
+
+  
+    <li>
+      <a title=" on Instagram" href="https://instagram.com/" target="_blank"><i class="fa fa-instagram fa-2x"></i></a>
+    </li>
+  
+
+  
+    <li>
+      <a title=" on Last.fm" href="https://www.lastfm.com/user/" target="_blank"><i class="fa fa-lastfm fa-2x"></i></a>
+    </li>
+  
+
+  
+    <li>
+      <a title="feed.xml RSS" href="/feed.xml" target="_blank"><i class="fa fa-rss fa-2x"></i></a>
+    </li>
+  
+
+</ul>
+
+        </div>
+      </div>
+    </footer>
+
+    </div>
+  </body>
+</html>
