@@ -3,7 +3,7 @@ layout: index
 title: index
 ---
 
-{% assign entries = site.entries | sort: "number" %}
+{% assign entries = posts.entries | sort: "number" %}
 {% for entry in entries %}
     {% if entry.title != 'index'%}
         <section id="{{ entry.sectionid }}" class="{{ entry.sectionclass }}">
