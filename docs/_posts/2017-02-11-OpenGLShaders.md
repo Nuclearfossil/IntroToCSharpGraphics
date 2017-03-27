@@ -11,9 +11,11 @@ tags:
 
 In the previous section, we discussed the legacy OpenGL programming model (more commonly refered to as the 'Fixed Function Pipeline'). In this next section, we're going to investigate a more modern approach, that utilizes shaders, Vertex buffers, Index buffers and how to send data to shaders from your program.
 
+To further assist, I've created a Google Sheets document [here](https://docs.google.com/presentation/d/1vji8FSaDiYdQRx6ZydNlz630258LIqzcmXQ94JiqvEI/edit?usp=sharing):
+
 ## To start - a more proper framework
 
-In the Introduction project, a lot of things were put together hapdash. I've corrected that in the `ShaderIntroduction` project:
+In the Introduction project, a lot of things were put together hapdash. I've made that better in the `ShaderIntroduction` project (but there's still work to be done):
 
 ![Initial Class Layout]({{site.baseurl}}/images/InitialClassLayout.png)
 
@@ -206,6 +208,7 @@ What the layout qualifier does is allow the C# code (CPU code) to not have to di
 The next line defines the Model-View-Projection matrix. This is sent in from the CPU side (C# code). The code looks like this:
 
 ``` csharp
+    // This is not the actual code, but a more verbose version.
     Matrix4 ModelViewProjection = ModelViewMatrix *
                                   WorldMatrix *
                                   ProjectionMatrix;
