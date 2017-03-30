@@ -128,7 +128,10 @@ namespace D3D11Introduction.utils
             device.ImmediateContext.VertexShader.SetConstantBuffer(0, mWVPConstantBuffer);
 
             DataStream mappedResourceLight = default(DataStream);
-            device.ImmediateContext.MapSubresource(mLightConstantBuffer, MapMode.WriteDiscard, MapFlags.None, out mappedResourceLight);
+            device.ImmediateContext.MapSubresource(mLightConstantBuffer, 
+                                                   MapMode.WriteDiscard, 
+                                                   MapFlags.None, 
+                                                   out mappedResourceLight);
             mappedResourceLight.Write(lightBuffer);
             device.ImmediateContext.UnmapSubresource(mLightConstantBuffer, 0);
 
