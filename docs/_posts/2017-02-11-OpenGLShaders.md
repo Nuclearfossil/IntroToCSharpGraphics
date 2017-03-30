@@ -9,7 +9,7 @@ tags:
 
 # OpenGL - An introduction to a more modern approach
 
-In the previous section, we discussed the legacy OpenGL programming model (more commonly refered to as the 'Fixed Function Pipeline'). In this next section, we're going to investigate a more modern approach, that utilizes shaders, Vertex buffers, Index buffers and how to send data to shaders from your program.
+In the previous section, we discussed the legacy OpenGL programming model (more commonly referred to as the 'Fixed Function Pipeline'). In this next section, we're going to investigate a more modern approach, that utilizes shaders, Vertex buffers, Index buffers and how to send data to shaders from your program.
 
 To further assist, I've created a Google Sheets document [here](https://docs.google.com/presentation/d/1vji8FSaDiYdQRx6ZydNlz630258LIqzcmXQ94JiqvEI/edit?usp=sharing):
 
@@ -26,7 +26,7 @@ A fair bit has changed with this codebase. I've been a bit more regimented in ho
  3. `TextureManager` is extracted into it's own class. This will not be used in this lesson (currently), but is going to be used in later lessons.
  4. The same goes for the `RenderGrid` class.
 
-In our previous codebase, we were using a more 'legacy' based version of OpenGL; this is the fixed function version of OpenGL that does not support shaders.  In this example, we're going to start talking about using proper shaders. We're not going to touch on Texturing in this introduction. What we are going to cover, however consists of:
+In our previous codebase, we were using a more 'legacy' based version of OpenGL; this is the fixed function version of OpenGL that does not support shaders.  In this example, we're going to start talking about using proper shaders. We're not going to touch on Texturing in this introduction. What we are going to cover, consists of:
 
  1. Vertex and Index buffers.
  2. Setting up data.
@@ -47,7 +47,7 @@ In our Legacy pipeline (from lesson01), we defined geometry data through using a
     GL.End()
 ```
 
-This if far from optimal, considering that for a large amount of data, it never changes. So we can defien a 'buffer' of data - in this case a buffer of Vertex data. That goes into what OpenGL calls a `Vertex Buffer Object` or `VBO`.  Wikipedia defines a VBO as
+This if far from optimal, considering that for a large amount of data, it never changes. So we can define a 'buffer' of data - in this case a buffer of Vertex data. That goes into what OpenGL calls a `Vertex Buffer Object` or `VBO`.  Wikipedia defines a VBO as
 
 > A Vertex Buffer Object (VBO) is an OpenGL feature that provides methods for uploading vertex data (position, normal vector, color, etc.) to the video device for non-immediate-mode rendering. VBOs offer substantial performance gains over immediate mode rendering primarily because the data resides in the video device memory rather than the system memory and so it can be rendered directly by the video device. These are equivalent to vertex buffers in Direct3D.
 
@@ -93,7 +93,7 @@ It's really hard to say what kind of loss we'd get because it really depends on 
 ```
 
 
-The less data we need to transfer, the better.  The math may be off, but you can see a couple of additional improvements here as well - we don't have to duplicate vertices! Instead of an additional 3 floats to represent 1 vertex, we simply add 1 uint to point the an existing vertex in the VBO.
+The less data we need to transfer, the better.  The math may be off, but you can see a couple of additional improvements here as well - we don't have to duplicate vertices! Instead of an additional 3 floats to represent 1 vertex, we simply add 1 `uint` to point the an existing vertex in the VBO.
 
 How do you go about creating a `VBO`? I've encapsulated the core functionality of a VBO in the `VertexBuffer` class. The process can be broken down into the following:
 
@@ -219,7 +219,7 @@ The next line defines the Model-View-Projection matrix. This is sent in from the
     GL.UseProgram(0);
 ```
 
-So we use a specifc shader program with `GL.UseProgram(ProgramID)` and disable it by calling the same method, but with a `0` arguement.
+So we use a specifc shader program with `GL.UseProgram(ProgramID)` and disable it by calling the same method, but with a `0` argument.
 
 Sending data to the shader program, in this case the Model-View-projection matrix is done through two functions: the first one to get a variable ID from the program (in this case the `mvp_matrix` variable) through `GL.GetUniformLocation()`. Then, once we have the variable ID, we can set the data (in this case, it's a uniform matrix) through `GL.UniformMatrix4()`. Whatever we set in this variable is the value the shader will use.
 
@@ -230,7 +230,7 @@ At this point, it's all on the shader:
  - We set the output color that we just defined to the color passed in by the vertex buffer
  - we then modify the vertex postion (`vertex_position`) passed in on the vertex buffer why the MVP matrix and assign it to a variable called `gl_Position`.
 
-Where did that `gl_Position` variable come from? It's actually defined as part of OpenGL's vertex, tesselation evaluation and geometry languages. It's part of a global instance of the `gl_PerVertex` named block. It is an output that receives the homogeneous vertex position; the position of the vertex in screen space. See [khronos.org](https://www.khronos.org/registry/OpenGL-Refpages/gl4/html/gl_Position.xhtml) for a deeper breakdown. In other words, the GLSL vertex shader doesn't output any data, but it does allow us to populate global data in each shader stage.
+Where did that `gl_Position` variable come from? It's actually defined as part of OpenGL's vertex, tessellation evaluation and geometry languages. It's part of a global instance of the `gl_PerVertex` named block. It is an output that receives the homogeneous vertex position; the position of the vertex in screen space. See [khronos.org](https://www.khronos.org/registry/OpenGL-Refpages/gl4/html/gl_Position.xhtml) for a deeper breakdown. In other words, the GLSL vertex shader doesn't output any data, but it does allow us to populate global data in each shader stage.
 
 OK. What do I mean by 'each shader stage'. We've danced around this a bit. This shader we've just looked at? I've repeatedly called it the 'vertex shader'. That's arguably the first stage in the shading pipeline. However there's a lot more to it than that.
 
@@ -242,7 +242,7 @@ In all honesty, Anton's site does a fantastic job talking about the broad aspect
 
 ## Fragment/Pixel shaders
 
-As we've seen in the above diagarm, we've only touched on Vertex shaders. There's one last piece of the puzzle, and that's Pixel/Fragment shaders. I'll probably end up slipping and call them Pixel shaders more often than Fragment shaders, but I'm using them interchangibly.
+As we've seen in the above diagram, we've only touched on Vertex shaders. There's one last piece of the puzzle, and that's Pixel/Fragment shaders. I'll probably end up slipping and call them Pixel shaders more often than Fragment shaders, but I'm using them interchangeably.
 
 If you look at our C# code, you'll notice that we don't do anything with sending data to Pixel shaders. That's because all the data we're sending right now is generated in the Vertex shader. In a later article, I'll introduce how we would do that.
 
@@ -271,10 +271,10 @@ In the Pixel shader, we don't actually do a lot:
     }
 ```
 
-It's incredibly simple - we set an output value bound to the pixel. In fragment shaders, you can think of this as the index of the output buffer that we are writing the pixel to. If we don't define one in out CPU code (C# code), and we weren't to explicitly add the `(location=0)` bit to our shader, if there is only ont `out` variable, the compiler will normally generate one for us. But don't do that.
+It's incredibly simple - we set an output value bound to the pixel. In fragment shaders, you can think of this as the index of the output buffer that we are writing the pixel to. If we don't define one in out CPU code (C# code), and we weren't to explicitly add the `(location=0)` bit to our shader, if there is only one `out` variable, the compiler will normally generate one for us. But don't do that.
 
 Thus, we're only writing out the interpolated color from the fragment shader.  That's it. Nothing terribly fancy. In a later lesson, I'll go over more.
 
-I think that's enough for this lesson. It's been a lot to write, as we're covering a lot of fundamentals.  The rest of the code is fairly self-explanitory.
+I think that's enough for this lesson. It's been a lot to write, as we're covering a lot of fundamentals.  The rest of the code is fairly self-explanatory.
 
 Until next time!

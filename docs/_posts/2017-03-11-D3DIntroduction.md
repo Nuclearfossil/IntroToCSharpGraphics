@@ -10,7 +10,7 @@ tags:
 
 # Direct3D - Introduction
 
-In our past examples, we've looked at Fixed Function Pipelines and a quick look at the OpenGLb shader pipeline. This time around, we'll take a look at setting up and using DirectX 11.
+In our past examples, we've looked at Fixed Function Pipelines and a quick look at the OpenGL shader pipeline. This time around, we'll take a look at setting up and using DirectX 11.
 
 SharpDX is the underlying library that we're using for DirectX, as C# doesn't have a native binding/library for accessing lower level graphics libraries.
 
@@ -170,11 +170,11 @@ Each `InputElement` defines each element in the input layout - in this case, we'
  - The HLSL semantic associated with this element in a shader input-signature.
  - The semantic index for the element. A semantic index modifies a semantic, with an integer index number. A semantic index is only needed in a case where there is more than one element with the same semantic. For example, a 4x4 matrix would have four components each with the semantic name matrix, however each of the four component would have different semantic indices (0, 1, 2, and 3).
  - The data type of the element data.
- - Offset (in bytes) between each element. Use AppendAligned for convenience to define the current element directly after the previous one, including any packing if necessary.
+ - Offset (in bytes) between each element. Use `AppendAligned` for convenience to define the current element directly after the previous one, including any packing if necessary.
  - An integer value that identifies the input-assembler. Valid values are between 0 and 15.
 
 
-## Definint a Vertex Buffer
+## Defining a Vertex Buffer
 
 Again, pretty simple - Use `D3DBuffer` to create the data:
 
@@ -313,7 +313,7 @@ So, that only leaves the `: SV_Target` bit on the pixel shader function definiti
 
 To summarize, the vertex shader does nothing more than transform the vertex (and thus the triangle) into screen space and then interpolate the color passed in to the vertex shader across the triangle.
 
-HLSL shader sematics can be found [here](https://goo.gl/3N8AnL).
+HLSL shader semantics can be found [here](https://goo.gl/3N8AnL).
 
 # Building a better library
 ## The Shader Class
@@ -413,7 +413,7 @@ For our needs, we are only using 2D coordinates (yes, you can have 3D textures).
 
 ![Triangle mapped to UV]({{site.baseurl}}/images/triangle_uv_coordinates.png)
 
-Points a, b and c would have coresponding UV values mappeed against the texture. Nothing crazy there. I've coded them by hand (you're welcome) but you'd want to use a proper 3D DCC package to do it right. There are also various projections you could use to automatically generate the UV coordinates onto regular shapes, but that's beyond the scope of this article.
+Points a, b and c would have corresponding UV values mappeed against the texture. Nothing crazy there. I've coded them by hand (you're welcome) but you'd want to use a proper 3D DCC package to do it right. There are also various projections you could use to automatically generate the UV coordinates onto regular shapes, but that's beyond the scope of this article.
 
 Now that you have UV data for your content, we need to load some textures to use!  To that end, I've created a `Texture` class we can use. There's really nothing surprising here. SharpDX has access to the 'Windows Imaging Component'; a Microsoft API that gives us access to some fairly low level functionality for reading/writing image data. (link: https://msdn.microsoft.com/en-us/library/windows/desktop/ee719902.aspx). The big takeaway here is that WIC allows us to read pretty much any image data type.
 
@@ -466,7 +466,7 @@ internal struct MatrixBuffer
 }
 ```
 
-No padding necesary here.
+No padding necessary here.
 
 Sending this across to the GPU is, again, fairly straightforward:
 
@@ -504,17 +504,17 @@ Shader model reference link: (https://msdn.microsoft.com/en-us/library/windows/d
 # Something sort of resembling a framework (Example05.cs)
 No, it's not *really* a framework now, but it's starting to look more an more like one. Yes, it's still another spinning cube, but the cube, this time, was generated in Maya, not by hand. Thus we now have a rudimentary `RenderMesh` class that holds a renderable object.
 
-So, a `RenderableMesh` has a D3DBuffer for vertex data, only reads Triangles (no index buffer at this point), and also contains a `RenderMaterial` class instance.  For a lot of you, this is old hat, especially if you've worked in any 3D DCC, but a Material in this case defines color information that should be applied to a mesh. Typically that includes an ambient color, specular, diffuse ... textures ... it really depends on your shading model.  For this case, tho, we're going to use a fairly simple shading model; ambient color, diffuse color and a diffuse map.  In a later example, we're going to do much, much more complex shaders.
+So, a `RenderableMesh` has a D3DBuffer for vertex data, only reads Triangles (no index buffer at this point), and also contains a `RenderMaterial` class instance.  For a lot of you, this is old hat, especially if you've worked in any 3D DCC, but a Material in this case defines color information that should be applied to a mesh. Typically that includes an ambient color, specular, diffuse ... textures ... it really depends on your shading model.  For this case, though, we're going to use a fairly simple shading model; ambient color, diffuse color and a diffuse map.  In a later example, we're going to do much, much more complex shaders.
 
-However, we need to be able to load data from an intermediate file format. In this case, .fbx (although other formats are supported). Are we going to write our own import library? Hell no. There's a fantastics Open Source library out there for both C++ and C# called Open Asset Import library: (https://github.com/assimp)
+However, we need to be able to load data from an intermediate file format. In this case, `.fbx` (although other formats are supported). Are we going to write our own import library? Hell no. There's a fantastics Open Source library out there for both C++ and C# called Open Asset Import library: (https://github.com/assimp)
 
 Yes, it's called AssImp. Shut up.
 
 What I've done is created a static class called `MeshManager` that tracks loaded meshes (so you don't re-load an existing mesh) and provides a `RenderMesh` for you. It uses the AssImp library to do all the heavy lifting. What we do with that library is access all the vertex and material data and generate the `RenderMesh` and `RenderMaterial` from it. There are a few convenience functions in there (building a proper path to the assets, including textures), as well as some data validation.
 
-But there is a lot more it can (and will) do. Loading an asset from an fbx, dae or other file format is not a quick process. It's fairly complex. Also, intermediate file formats are *large*. They don't have to be. Especially considering what we want as data. So the actual goal of this tool class will be to eventually generate a 'transform' of an intermediate data file into a highly compact and potentially streamable version of the data, in binary form.  But more on that later (much later).
+But there is a lot more it can (and will) do. Loading an asset from an `fbx`, `dae` or other file format is not a quick process. It's fairly complex. Also, intermediate file formats are *large*. They don't have to be. Especially considering what we want as data. So the actual goal of this tool class will be to eventually generate a 'transform' of an intermediate data file into a highly compact and potentially streamable version of the data, in binary form.  But more on that later (much later).
 
-To that end, I've also updated the Shader as well - the constant buffer for the `LightBuffer` hasn't changed, but we've broken the `MatrixBuffer` down even further to contain the workd, view and projection matrices. This is far from optimal, but there's a reason for this madness.
+To that end, I've also updated the Shader as well - the constant buffer for the `LightBuffer` hasn't changed, but we've broken the `MatrixBuffer` down even further to contain the world, view and projection matrices. This is far from optimal, but there's a reason for this madness.
 
 See, as I was building `Example05`, I was having a heck of a time getting the object transformation *just* right. So I broke the matrices down into their individual components so I could better debug them - make sure that what I was sending in was what I was expecting.
 
@@ -571,9 +571,9 @@ You can also inspect and see what are in constant buffers
 So, as you can see, we've actually got some decent debugging tools with D3D and Visual Studio, out of the box. We'll explore these tools more as we progress along our merry little way.
 
 ## A couple of notes
-The shaders that we use here are fairly lightweight.  They're also unoptimized.
+The shaders that we use here are fairly lightweight.  They're also un-optimized.
 
-I don't mean, I haven't witten them optimally (I haven't, but that's because I'm being purposely verbose). I've disabled compiliation optimizations on the shaders so that the above debugger has better data for being able to debug them.
+I don't mean, I haven't witten them optimally (I haven't, but that's because I'm being purposely verbose). I've disabled compilation optimizations on the shaders so that the above debugger has better data for being able to debug them.
 
 I've done this in the shader compiler:
 
@@ -602,7 +602,7 @@ In production code, you'll want to remove them or replace them with something mo
 # And a camera to round out this mess
 In `Example06` I finally introduce a camera class into the mix. It encapsulated the View and Projection matrices, exposes accessors for them and updates the camera based on input.
 
-I'm cheating a fair bit here and using OpenTK's input library to get the caemra up and running. I will eventually move away from this and use DirectInput (or whatever D3D 11 is calling it these days).  This camera is essentially a near-verbatim copyu of the previous OpenGL camera I created, replacing all the matrix operations with the comparable D3D calls.
+I'm cheating a fair bit here and using OpenTK's input library to get the camera up and running. I will eventually move away from this and use DirectInput (or whatever D3D 11 is calling it these days).  This camera is essentially a near-verbatim copy of the previous OpenGL camera I created, replacing all the matrix operations with the comparable D3D calls.
 
 Also note that I'm using a Left Handed co-ordinate system. Who says you need to use a Right Handed co-ordinate system!
 
