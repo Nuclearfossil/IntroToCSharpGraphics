@@ -151,13 +151,19 @@ namespace D3D11Introduction.utils
                 viewproj = viewproj
             };
 
-            device.ImmediateContext.MapSubresource(mMatrixConstantBuffer, MapMode.WriteDiscard, MapFlags.None, out mMappedResourceMatrix);
+            device.ImmediateContext.MapSubresource(mMatrixConstantBuffer, 
+                                                   MapMode.WriteDiscard, 
+                                                   MapFlags.None, 
+                                                   out mMappedResourceMatrix);
             mMappedResourceMatrix.Write(matrixBuffer);
             device.ImmediateContext.UnmapSubresource(mMatrixConstantBuffer, 0);
 
             device.ImmediateContext.VertexShader.SetConstantBuffer(1, mMatrixConstantBuffer);
 
-            device.ImmediateContext.MapSubresource(mLightConstantBuffer, MapMode.WriteDiscard, MapFlags.None, out mMappedResourceLight);
+            device.ImmediateContext.MapSubresource(mLightConstantBuffer, 
+                                                   MapMode.WriteDiscard, 
+                                                   MapFlags.None, 
+                                                   out mMappedResourceLight);
             mMappedResourceLight.Write(lightBuffer);
             device.ImmediateContext.UnmapSubresource(mLightConstantBuffer, 0);
 

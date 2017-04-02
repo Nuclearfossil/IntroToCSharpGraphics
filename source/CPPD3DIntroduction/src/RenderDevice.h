@@ -18,28 +18,30 @@ class VisualGrid;
 class RenderDevice
 {
 public:
-	RenderDevice(void);
-	~RenderDevice(void);
+	RenderDevice();
+	~RenderDevice();
 
 	bool Init( HWND _hwnd, UINT _width, UINT _height, BOOL _windowed );
 	bool ResizeSwapchain(  HWND _hwnd );
 
 	void Present();
-	ID3D11Device* GetDevice() { return m_Device; }
+	ID3D11Device* GetDevice() { return mDevice; }
 
 	VisualGrid* CreateVisualGrid();
 
 private:
-	ID3D11Device*			m_Device;
-	ID3D11DeviceContext*	m_ImmediateContext;
-	IDXGISwapChain*			m_SwapChain;
-	ID3D11Texture2D*		m_BackBuffer;
-	ID3D11RenderTargetView*	m_RenderTargetView;
+    void UpdateViewport();
+private:
+	ID3D11Device*			mDevice;
+	ID3D11DeviceContext*	mImmediateContext;
+	IDXGISwapChain*			mSwapChain;
+	ID3D11Texture2D*		mBackBuffer;
+	ID3D11RenderTargetView*	mRenderTargetView;
 
-	ID3D11Buffer*			m_ConstantBuffer;
+	ID3D11Buffer*			mConstantBuffer;
 
-	UINT					m_width;
-	UINT					m_height;
+	UINT					mWidth;
+	UINT					mHeight;
 };
 
 #endif // __RENDERDEVICE_H__

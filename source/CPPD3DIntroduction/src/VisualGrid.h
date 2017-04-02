@@ -4,12 +4,12 @@
 class VisualGrid
 {
 public:
-	VisualGrid(void);
-	~VisualGrid(void);
+	VisualGrid();
+	~VisualGrid();
 
 	void Render( );
 
-	ID3D11Buffer*		m_vertexBuffer;
+	ID3D11Buffer* mVertexBuffer;
 };
 
 #endif // __VISUALGRID_H__

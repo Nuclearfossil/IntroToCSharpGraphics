@@ -72,6 +72,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
         }
     }
 
+    delete g_visualGrid;
     return ( int )msg.wParam;
 }
 

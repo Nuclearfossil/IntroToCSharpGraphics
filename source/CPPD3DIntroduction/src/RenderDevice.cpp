@@ -1,19 +1,10 @@
 #include "StdAfx.h"
 #include "D3D11.h"
-#include "D3D11.h"
 #include "DirectXMath.h"
 #include "VisualGrid.h"
 #include "RenderDevice.h"
+#include "Utils.h"
 
-template <class T>
-    void SafeRelease(T& IUnk)
-{
-    if (IUnk)
-    {
-        IUnk->Release();
-        IUnk = NULL;
-    }
-}
 
 struct VS_CONSTANT_BUFFER
 {
@@ -24,21 +15,23 @@ struct VS_CONSTANT_BUFFER
 
 RenderDevice::RenderDevice(void)
 {
-    m_Device = NULL;
-    m_ImmediateContext = NULL;
-    m_SwapChain = NULL;
-    m_BackBuffer = NULL;
-    m_RenderTargetView = NULL;
+    mDevice = NULL;
+    mImmediateContext = NULL;
+    mSwapChain = NULL;
+    mBackBuffer = NULL;
+    mRenderTargetView = NULL;
 
 }
 
 
 RenderDevice::~RenderDevice(void)
 {
-    SafeRelease( m_RenderTargetView );
-    SafeRelease( m_BackBuffer );
-    SafeRelease( m_ImmediateContext );
-    SafeRelease( m_Device );
+    SafeRelease( mRenderTargetView );
+    SafeRelease(mConstantBuffer);
+    SafeRelease( mBackBuffer );
+    SafeRelease( mSwapChain );
+    SafeRelease( mImmediateContext );
+    SafeRelease( mDevice );
 }
 
 
@@ -54,9 +47,8 @@ bool RenderDevice::Init( HWND _hwnd, UINT _width, UINT _height, BOOL _windowed )
 
     D3D_FEATURE_LEVEL featureLevels[] =
     {
-        D3D_FEATURE_LEVEL_11_0,
-        D3D_FEATURE_LEVEL_10_1,
-        D3D_FEATURE_LEVEL_10_0,
+        D3D_FEATURE_LEVEL_11_1,
+        D3D_FEATURE_LEVEL_11_0
     };
     UINT numFeatureLevels = ARRAYSIZE( featureLevels );
 
@@ -74,38 +66,55 @@ bool RenderDevice::Init( HWND _hwnd, UINT _width, UINT _height, BOOL _windowed )
     swapChainDesc.SampleDesc.Quality = 0;
     swapChainDesc.Windowed = TRUE;
 
-    if( FAILED( D3D11CreateDeviceAndSwapChain( NULL, D3D_DRIVER_TYPE_HARDWARE, NULL, 0, featureLevels, numFeatureLevels,
-        D3D11_SDK_VERSION, &swapChainDesc, &m_SwapChain, &m_Device, NULL, &m_ImmediateContext ) ) )
+    if( FAILED( D3D11CreateDeviceAndSwapChain( 
+                    NULL, 
+                    D3D_DRIVER_TYPE_HARDWARE, 
+                    NULL, 
+                    0, 
+                    featureLevels, 
+                    numFeatureLevels,
+                    D3D11_SDK_VERSION, 
+                    &swapChainDesc, 
+                    &mSwapChain, 
+                    &mDevice, 
+                    NULL, 
+                    &mImmediateContext ) ) )
     {
         return FALSE;
     }
 
     // Create a render target view
-    if( FAILED( m_SwapChain->GetBuffer( 0, __uuidof( ID3D11Texture2D ), (LPVOID*)&m_BackBuffer ) ) )
+    if( FAILED( mSwapChain->GetBuffer( 0, __uuidof( ID3D11Texture2D ), (LPVOID*)&mBackBuffer ) ) )
     {
         return FALSE;
     }
 
-    HRESULT hr = m_Device->CreateRenderTargetView( m_BackBuffer, NULL, &m_RenderTargetView );
-    SafeRelease(m_BackBuffer);
+    HRESULT hr = mDevice->CreateRenderTargetView( mBackBuffer, NULL, &mRenderTargetView );
+    SafeRelease(mBackBuffer);
     if( FAILED( hr ) )
     {
         return FALSE;
     }
 
-    m_ImmediateContext->OMSetRenderTargets( 1, &m_RenderTargetView, NULL );
+    mImmediateContext->OMSetRenderTargets( 1, &mRenderTargetView, NULL );
 
-    m_width = _width;
-    m_height = _height;
+    mWidth = _width;
+    mHeight = _height;
 
+    UpdateViewport();
+    return true;
+}
+
+void RenderDevice::UpdateViewport()
+{
     D3D11_VIEWPORT viewport;
-    viewport.Width = (FLOAT)_width;
-    viewport.Height = (FLOAT)_height;
+    viewport.Width = (FLOAT)mWidth;
+    viewport.Height = (FLOAT)mHeight;
     viewport.MinDepth = 0.0f;
     viewport.MaxDepth = 1.0f;
     viewport.TopLeftX = 0;
     viewport.TopLeftY = 0;
-    m_ImmediateContext->RSSetViewports( 1, &viewport );
+    mImmediateContext->RSSetViewports( 1, &viewport );
 
     // Setup constant buffers
     // Fill in a buffer description.
@@ -118,75 +127,73 @@ bool RenderDevice::Init( HWND _hwnd, UINT _width, UINT _height, BOOL _windowed )
     cbDesc.StructureByteStride = 0;
 
     // Create the buffer.
-    hr = m_Device->CreateBuffer( &cbDesc, NULL, &m_ConstantBuffer );
+    HRESULT hr = mDevice->CreateBuffer( &cbDesc, NULL, &mConstantBuffer );
 
     if( SUCCEEDED( hr ) )
     {
         // Set the buffer.
-        m_ImmediateContext->VSSetConstantBuffers( 0, 1, &m_ConstantBuffer );
+        mImmediateContext->VSSetConstantBuffers( 0, 1, &mConstantBuffer );
     }
-
-    return true;
 }
 
 bool RenderDevice::ResizeSwapchain( HWND _hwnd )
 {
-    if (m_ImmediateContext == nullptr)
+    if (mImmediateContext == nullptr)
         return false;
 
     RECT rc;
     GetClientRect( _hwnd, &rc );
 
-    m_width = rc.right - rc.left;
-    m_height = rc.bottom - rc.top;
+    mWidth = rc.right - rc.left;
+    mHeight = rc.bottom - rc.top;
 
     // Sanity check
-    if ( (m_SwapChain != NULL) && !(m_width > 0 && m_height > 0) )
+    if ( (mSwapChain != NULL) && !(mWidth > 0 && mHeight > 0) )
     {
         return FALSE;
     }
 
-    m_ImmediateContext->OMSetRenderTargets( 0, 0, 0 );
+    mImmediateContext->OMSetRenderTargets( 0, 0, 0 );
 
-    m_RenderTargetView->Release();
+    mRenderTargetView->Release();
 
-    if ( FAILED( m_SwapChain->ResizeBuffers( 1, m_width, m_height, DXGI_FORMAT_R8G8B8A8_UNORM, 0 ) ) )
+    if ( FAILED( mSwapChain->ResizeBuffers( 1, mWidth, mHeight, DXGI_FORMAT_R8G8B8A8_UNORM, 0 ) ) )
     {
         return FALSE;
     }
 
     // Create a render target view
-    if( FAILED( m_SwapChain->GetBuffer( 0, __uuidof( ID3D11Texture2D ), (LPVOID*)&m_BackBuffer ) ) )
+    if( FAILED( mSwapChain->GetBuffer( 0, __uuidof( ID3D11Texture2D ), (LPVOID*)&mBackBuffer ) ) )
     {
         return FALSE;
     }
 
-    HRESULT hr = m_Device->CreateRenderTargetView( m_BackBuffer, NULL, &m_RenderTargetView );
-    SafeRelease(m_BackBuffer);
+    HRESULT hr = mDevice->CreateRenderTargetView( mBackBuffer, NULL, &mRenderTargetView );
+    SafeRelease(mBackBuffer);
     if( FAILED( hr ) )
     {
         return FALSE;
     }
 
-    m_ImmediateContext->OMSetRenderTargets( 1, &m_RenderTargetView, NULL );
+    mImmediateContext->OMSetRenderTargets( 1, &mRenderTargetView, NULL );
 
     D3D11_VIEWPORT viewport;
-    viewport.Width = (FLOAT)m_width;
-    viewport.Height = (FLOAT)m_height;
+    viewport.Width = (FLOAT)mWidth;
+    viewport.Height = (FLOAT)mHeight;
     viewport.MinDepth = 0.0f;
     viewport.MaxDepth = 1.0f;
     viewport.TopLeftX = 0;
     viewport.TopLeftY = 0;
-    m_ImmediateContext->RSSetViewports( 1, &viewport );
+    mImmediateContext->RSSetViewports( 1, &viewport );
     return SUCCEEDED(hr);
 }
 
 void RenderDevice::Present()
 {
     float ClearColor[4] = { 0.0f, 0.125f, 0.1f, 1.0f }; // RGBA
-    m_ImmediateContext->ClearRenderTargetView( m_RenderTargetView, ClearColor );
+    mImmediateContext->ClearRenderTargetView( mRenderTargetView, ClearColor );
 
-    m_SwapChain->Present( 0, 0 );
+    mSwapChain->Present( 0, 0 );
 }
 
 struct SimpleVertexCombined
@@ -223,6 +230,6 @@ VisualGrid* RenderDevice::CreateVisualGrid()
     initData.SysMemPitch = 0;
     initData.SysMemSlicePitch = 0;
 
-    m_Device->CreateBuffer( &bufferDesc, &initData, &(visualGrid->m_vertexBuffer) );
+    mDevice->CreateBuffer( &bufferDesc, &initData, &(visualGrid->mVertexBuffer) );
     return visualGrid;
 }
