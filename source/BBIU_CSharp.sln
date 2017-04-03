@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26228.9
+VisualStudioVersion = 15.0.26228.10
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "introduction", "lesson01\introduction.csproj", "{1F9FD662-C482-4EC4-B055-1599934DC149}"
 EndProject
@@ -14,8 +14,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShaderIntroduction", "ShaderIntroduction\ShaderIntroduction.csproj", "{CA534534-B76E-4989-A014-E9DF26F3B5D3}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "D3D11Introduction", "D3D11Introduction\D3D11Introduction.csproj", "{1CA35F70-45B4-4D76-A509-876C65BB89BC}"
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CPPD3DIntroduction", "CPPD3DIntroduction\CPPD3DIntroduction.vcxproj", "{B423E6BC-DFA4-434D-A2B4-4250657AF5D8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -63,16 +61,6 @@ Global
 		{1CA35F70-45B4-4D76-A509-876C65BB89BC}.Release|x64.Build.0 = Release|Any CPU
 		{1CA35F70-45B4-4D76-A509-876C65BB89BC}.Release|x86.ActiveCfg = Release|Any CPU
 		{1CA35F70-45B4-4D76-A509-876C65BB89BC}.Release|x86.Build.0 = Release|Any CPU
-		{B423E6BC-DFA4-434D-A2B4-4250657AF5D8}.Debug|Any CPU.ActiveCfg = Debug|Win32
-		{B423E6BC-DFA4-434D-A2B4-4250657AF5D8}.Debug|x64.ActiveCfg = Debug|x64
-		{B423E6BC-DFA4-434D-A2B4-4250657AF5D8}.Debug|x64.Build.0 = Debug|x64
-		{B423E6BC-DFA4-434D-A2B4-4250657AF5D8}.Debug|x86.ActiveCfg = Debug|Win32
-		{B423E6BC-DFA4-434D-A2B4-4250657AF5D8}.Debug|x86.Build.0 = Debug|Win32
-		{B423E6BC-DFA4-434D-A2B4-4250657AF5D8}.Release|Any CPU.ActiveCfg = Release|Win32
-		{B423E6BC-DFA4-434D-A2B4-4250657AF5D8}.Release|x64.ActiveCfg = Release|x64
-		{B423E6BC-DFA4-434D-A2B4-4250657AF5D8}.Release|x64.Build.0 = Release|x64
-		{B423E6BC-DFA4-434D-A2B4-4250657AF5D8}.Release|x86.ActiveCfg = Release|Win32
-		{B423E6BC-DFA4-434D-A2B4-4250657AF5D8}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
